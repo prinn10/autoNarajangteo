@@ -1,16 +1,20 @@
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException
+
+
 import os
 import readHWP
 from collections import defaultdict
-
+import tools
+tb2_keys = ['참조번호', '사전규격등록번호', '품명','품명(사업명)', '배정예산액', '관련 사전규격번호', '공개일시', '의견등록마감일시', '공고기관', '수요기관', 'SW사업대상여부', '납품(완수)기한\n(납품일수)', '규격서 파일', '적합성여부']
+tb3_keys = ['사전규격등록번호', '파일명', '0036', '8111179901', '4321150102']
 def readPage(driver):
     download_path = 'C:\\Users\\정희운\\Downloads'
     # 1. 테이블 정보 읽어오기
     table = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/table')
     tbody = table.find_element_by_tag_name("tbody")
-    tb2info = defaultdict(list)
-    tb3info = defaultdict(list) # list형식의 value를 갖는 dictionary타입 선언
+    tb2info = tools.initListDict(tb2_keys)
+    tb3info = tools.initListDict(tb3_keys)
     for tr in tbody.find_elements_by_tag_name("tr"):
         th_list = []
         for th in tr.find_elements_by_tag_name("th"):
@@ -23,6 +27,16 @@ def readPage(driver):
 
         for i in range(len(th_list)):
             tb2info[th_list[i]].append(td_list[i])
+
+
+    if tb2info.get('관련 사전규격번호') == []:
+        tb2info['관련 사전규격번호'].append('')
+
+    if tb2info.get('품명') == []:
+        tb2info['품명'].append('')
+
+    if tb2info.get('품명(사업명)') == []:
+        tb2info['품명(사업명)'].append('')
 
     for key, val in tb2info.items():
         print('k' , key, 'v', val)
@@ -38,7 +52,7 @@ def readPage(driver):
         for file in file_list:
             print('파일 다운로드')
             file.click()
-            sleep(2)
+            sleep(1)
     else:
         print('규격서 파일 존재하지 않음')
 
@@ -48,7 +62,7 @@ def readPage(driver):
         driver.find_element_by_class_name('file_name').click()
         print('[첨부파일 (e-발주시스템)] 다운로드 완료')
         downloadCheck = True
-        sleep(4)
+        sleep(1)
     except NoSuchElementException:
         print('[첨부파일 (e-발주시스템)] 존재하지 않음')
         pass
@@ -56,11 +70,13 @@ def readPage(driver):
     ## 2.2 영업 적합성 여부 판단
     okng = False
     if downloadCheck == True:
+        tools.waitFileDownload(download_path)
+
         file_list = os.listdir(download_path)
         print(file_list)
         keyword_list = ['0036', '8111179901', '4321150102']
         for j, file in enumerate(file_list):
-            tb3info['사전규격등록번호'].append(tb2info['사전규격등록번호'])
+            tb3info['사전규격등록번호'].append(tb2info['사전규격등록번호'][0])
             tb3info['파일명'].append(str(file))
             for keyword in keyword_list:
                 if file.find('hwp') != -1:
@@ -72,7 +88,6 @@ def readPage(driver):
                     else:
                         print(file, keyword, '존재하지않습니다')
                         tb3info[keyword].append('False')
-                        okng = False
                 else:
                     tb3info[keyword].append('None')
 
@@ -86,7 +101,8 @@ def readPage(driver):
         tb2info['적합성여부'] = 'True'
     else:
         tb2info['적합성여부'] = 'False'
-
+    print(tb2info.keys())
+    print(tb3info.keys())
     return tb2info, tb3info, okng
 
 
