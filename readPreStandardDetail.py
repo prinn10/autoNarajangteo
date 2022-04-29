@@ -92,9 +92,9 @@ def readPage(driver):
         for j, file in enumerate(file_list):
             tb3info['사전규격등록번호'].append(tb2info['사전규격등록번호'][0])
             tb3info['파일명'].append(str(file))
-            for keyword in keyword_list:
-                if file.find('hwp') != -1:
-                    res = readHWP.open_and_findtext(os.path.join(download_path, file), keyword)
+            if file.find('hwp') != -1:
+                res_list = readHWP.advanced_open_and_findtext(os.path.join(download_path, file), keyword_list)
+                for res, keyword in zip(res_list, keyword_list):
                     if res == True:
                         print(file, keyword,'존재확인')
                         tb3info[keyword].append('True')
@@ -102,11 +102,23 @@ def readPage(driver):
                     else:
                         print(file, keyword, '존재하지않습니다')
                         tb3info[keyword].append('False')
-                else:
+            else:
+                for keyword in keyword_list:
                     tb3info[keyword].append('None')
-
-        for file in file_list:
             os.remove(os.path.join(download_path, file)) # 확인 후 해당 파일 삭제
+        #     for keyword in keyword_list:
+        #             if res == True:
+        #                 print(file, keyword,'존재확인')
+        #                 tb3info[keyword].append('True')
+        #                 okng = True
+        #             else:
+        #                 print(file, keyword, '존재하지않습니다')
+        #                 tb3info[keyword].append('False')
+        #         else:
+        #             tb3info[keyword].append('None')
+        #
+        # for file in file_list:
+        #     os.remove(os.path.join(download_path, file)) # 확인 후 해당 파일 삭제
     else:
         print('다로드된 파일이 없음')
 
