@@ -2,11 +2,13 @@
 # cd C:\Program Files\Google\Chrome\Application
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/Chrome_debug_temp"
 from collections import defaultdict
+
+# 셀레니움
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.select import Select
+from selenium.common.exceptions import NoSuchElementException
 
-import tools
-import readPreStandardDetail
 import pywinauto
 from pywinauto import application
 from pywinauto.application import Application
@@ -16,21 +18,20 @@ import pyautogui
 
 import time
 from time import sleep
-from selenium.webdriver.support.select import Select
+
+import readPreStandardDetail
+import tools
 
 chrome_options = Options()
 chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
 driver.implicitly_wait(5)
 
-driver.switch_to.frame(driver.find_element_by_name('sub'))
-driver.switch_to.frame(driver.find_element_by_name('main'))
+driver = tools.driverInit(driver)
 
 def moveNextPage(driver):
     sleep(2)
-    driver.switch_to.default_content()
-    driver.switch_to.frame(driver.find_element_by_name('sub'))
-    driver.switch_to.frame(driver.find_element_by_name('main'))
+    driver = tools.driverInit(driver)
 
     sleep(2)
     ele = driver.find_element_by_xpath('/html/body/div/div[2]/div/div[1]')
@@ -111,10 +112,7 @@ while finally_page_check:
 
     # 목록 10개 순환 소스
     for i in range(1,11):
-        driver.switch_to.default_content()
-        driver.switch_to.frame(driver.find_element_by_name('sub'))
-        driver.switch_to.frame(driver.find_element_by_name('main'))
-
+        driver = tools.driverInit(driver)
         driver.find_element_by_xpath('/html/body/div/div[2]/div/table/tbody/tr['+str(i)+']/td[4]/div/a').click()
 
         ##사전규격세부 읽고 처리##
@@ -134,7 +132,3 @@ while finally_page_check:
 
     print("10개 처리 시간 :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
 
-### page read
-# tb2info, tb3info, okng = readPreStandardDetail.readPage(driver) # 페이지 정보 읽기
-# tools.writeTb2(tb2info)
-# tools.writeTb3(tb3info)

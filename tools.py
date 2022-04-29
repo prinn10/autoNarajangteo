@@ -3,6 +3,13 @@ import pandas as pd
 from time import sleep
 import os
 
+# 셀레니움
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.select import Select
+from selenium.common.exceptions import NoSuchElementException
+
+
 def writeTb1(tbinfo): # 크롤링 데이터 메타정보 저장함수
     db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
     db.to_csv('tb1.csv', mode='a', header=False, index=True, encoding='utf-8-sig')
@@ -36,17 +43,9 @@ def waitFileDownload(download_path):
         if all_check == False:
             break
 
+def driverInit(driver):
+    driver.switch_to.default_content()
+    driver.switch_to.frame(driver.find_element_by_name('sub'))
+    driver.switch_to.frame(driver.find_element_by_name('main'))
 
-
-#
-# wb = xl.load_workbook('크롤링.xlsx')
-# for sheet_nm in wb.sheetnames:
-#     print('*' * 100)
-#     print('시트명:', sheet_nm)
-#     sheet = wb[sheet_nm]
-#     for row_data in sheet.iter_rows(min_row=1): # min_row는 시작 행을 지정 for cell in row_data: print('[', cell.value, ']') print('=' * 100) wb.close()
-#         for cell in row_data:
-#             print('[', cell.value, ']')
-#         print('=' * 100)
-#
-# wb.close()
+    return driver
