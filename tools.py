@@ -5,12 +5,12 @@ def writeTb1(tbinfo): # 크롤링 데이터 메타정보 저장함수
     pass
 
 def writeTb2(tbinfo): # 크롤링 데이터 메타정보 저장함수
-    db = pd.DataFrame(tbinfo, columns=tbinfo.keys(), index=[0])
-    db.to_csv('DB.csv', mode='a', header=False, index=True, encoding='utf-8-sig')
-    pass
+    db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
+    db.to_csv('tb2.csv', mode='a', header=False, index=True, encoding='utf-8-sig')
 
 def writeTb3(tbinfo): # 크롤링 데이터 메타정보 저장함수
-    pass
+    db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
+    db.to_csv('tb3.csv', mode='a', header=False, index=True, encoding='utf-8-sig')
 
 def writeTb4(tbinfo): # 크롤링 데이터 메타정보 저장함수
     pass

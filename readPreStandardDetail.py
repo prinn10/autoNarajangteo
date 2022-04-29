@@ -2,15 +2,15 @@ from time import sleep
 from selenium.common.exceptions import NoSuchElementException
 import os
 import readHWP
-import collections import defaultdict
+from collections import defaultdict
 
 def readPage(driver):
     download_path = 'C:\\Users\\정희운\\Downloads'
     # 1. 테이블 정보 읽어오기
     table = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/table')
     tbody = table.find_element_by_tag_name("tbody")
-    tb2info = {}
-    tb3info = defaultdict(list)
+    tb2info = defaultdict(list)
+    tb3info = defaultdict(list) # list형식의 value를 갖는 dictionary타입 선언
     for tr in tbody.find_elements_by_tag_name("tr"):
         th_list = []
         for th in tr.find_elements_by_tag_name("th"):
@@ -22,7 +22,7 @@ def readPage(driver):
             td_list.append(td.get_attribute("innerText"))
 
         for i in range(len(th_list)):
-            tb2info[th_list[i]] = td_list[i]
+            tb2info[th_list[i]].append(td_list[i])
 
     for key, val in tb2info.items():
         print('k' , key, 'v', val)
@@ -58,21 +58,26 @@ def readPage(driver):
     if downloadCheck == True:
         file_list = os.listdir(download_path)
         print(file_list)
-        keyword = ['0036', '8111179901', '4321150102']
-        tb3info[]
+        keyword_list = ['0036', '8111179901', '4321150102']
         for j, file in enumerate(file_list):
-
-            for i in range(len(keyword)):
+            tb3info['사전규격등록번호'].append(tb2info['사전규격등록번호'])
+            tb3info['파일명'].append(str(file))
+            for keyword in keyword_list:
                 if file.find('hwp') != -1:
-                    res = readHWP.open_and_findtext(os.path.join(download_path, file), keyword[i])
+                    res = readHWP.open_and_findtext(os.path.join(download_path, file), keyword)
                     if res == True:
-                        print(file, keyword[i],'존재확인')
+                        print(file, keyword,'존재확인')
+                        tb3info[keyword].append('True')
                         okng = True
                     else:
-                        print(file, keyword[i], '존재하지않습니다')
+                        print(file, keyword, '존재하지않습니다')
+                        tb3info[keyword].append('False')
+                        okng = False
+                else:
+                    tb3info[keyword].append('None')
 
-        # for file in file_list:
-        #     os.remove(os.path.join(download_path, file)) # 확인 후 해당 파일 삭제
+        for file in file_list:
+            os.remove(os.path.join(download_path, file)) # 확인 후 해당 파일 삭제
 
     else:
         print('다로드된 파일이 없음')
@@ -82,7 +87,7 @@ def readPage(driver):
     else:
         tb2info['적합성여부'] = 'False'
 
-    return tb2info, okng
+    return tb2info, tb3info, okng
 
 
 # 사전규격 상세 (물품) 페이지 읽는 함수

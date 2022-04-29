@@ -1,11 +1,11 @@
 #CMD
 # cd C:\Program Files\Google\Chrome\Application
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/Chrome_debug_temp"
-
+from collections import defaultdict
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import tools
-import readPreStandardDetailPage
+import readPreStandardDetail
 import pywinauto
 from pywinauto import application
 from pywinauto.application import Application
@@ -54,25 +54,36 @@ driver.switch_to.frame(driver.find_element_by_name('main'))
 # sleep(1)
 
 #목록 정보 추출
-# table = driver.find_element_by_xpath('/html/body/div/div[2]/div/table')
-# tbody = table.find_element_by_tag_name("tbody")
-# rows = tbody.find_elements_by_tag_name("tr")
-#
-# y = []
-# for i, value in enumerate(rows):
-#     x = []
-#     for j in range(7):
-#         body=value.find_elements_by_tag_name("td")[j]
-#         x.append(body.text)
-#     y.append(x)
-#
-# for i in range(10):
-#     for j in range(7):
-#         print(y[i][j],end='  ')
-#     print()
+tb1info = defaultdict(list)
+tb1keylist = ['No.','등록번호','참조번호','품명','수요기관','사전규격공개일시','업체등록의견수','적합성여부']
 
-tbinfo, okng = readPreStandardDetailPage.readPage(driver) # 페이지 정보 읽기
-tools.writeMetainfo(tbinfo)
+table = driver.find_element_by_xpath('/html/body/div/div[2]/div/table')
+tbody = table.find_element_by_tag_name("tbody")
+rows = tbody.find_elements_by_tag_name("tr")
+for i, value in enumerate(rows):
+    for j in range(7):
+        body=value.find_elements_by_tag_name("td")[j]
+        tb1info[tb1keylist[j]].append(body.text)
 
-print(tbinfo)
-print(okng)
+# 목록 10개 순환 소스
+driver.switch_to.default_content()
+for i in range(1,11):
+    driver.switch_to.frame(driver.find_element_by_name('sub'))
+    driver.switch_to.frame(driver.find_element_by_name('main'))
+    driver.find_element_by_xpath('/html/body/div/div[2]/div/table/tbody/tr['+str(i)+']/td[4]/div/a').click()
+
+    ##사전규격세부 읽고 처리##
+    sleep(1)
+    tb2info, tb3info, okng = readPreStandardDetail.readPage(driver) # 페이지 정보 읽기
+    tools.writeTb2(tb2info)
+    tools.writeTb3(tb3info)
+    sleep(2)
+    ######################
+
+    driver.back()
+    driver.switch_to.default_content()
+
+### page read
+# tb2info, tb3info, okng = readPreStandardDetail.readPage(driver) # 페이지 정보 읽기
+# tools.writeTb2(tb2info)
+# tools.writeTb3(tb3info)
