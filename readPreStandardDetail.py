@@ -2,13 +2,15 @@ from time import sleep
 from selenium.common.exceptions import NoSuchElementException
 import os
 import readHWP
+import collections import defaultdict
 
 def readPage(driver):
     download_path = 'C:\\Users\\정희운\\Downloads'
     # 1. 테이블 정보 읽어오기
     table = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/table')
     tbody = table.find_element_by_tag_name("tbody")
-    tbinfo = {}
+    tb2info = {}
+    tb3info = defaultdict(list)
     for tr in tbody.find_elements_by_tag_name("tr"):
         th_list = []
         for th in tr.find_elements_by_tag_name("th"):
@@ -20,9 +22,9 @@ def readPage(driver):
             td_list.append(td.get_attribute("innerText"))
 
         for i in range(len(th_list)):
-            tbinfo[th_list[i]] = td_list[i]
+            tb2info[th_list[i]] = td_list[i]
 
-    for key, val in tbinfo.items():
+    for key, val in tb2info.items():
         print('k' , key, 'v', val)
 
     # 2. 첨부파일 다운로드 및 영업 적합성 여부 판단
@@ -57,7 +59,9 @@ def readPage(driver):
         file_list = os.listdir(download_path)
         print(file_list)
         keyword = ['0036', '8111179901', '4321150102']
-        for file in file_list:
+        tb3info[]
+        for j, file in enumerate(file_list):
+
             for i in range(len(keyword)):
                 if file.find('hwp') != -1:
                     res = readHWP.open_and_findtext(os.path.join(download_path, file), keyword[i])
@@ -73,7 +77,12 @@ def readPage(driver):
     else:
         print('다로드된 파일이 없음')
 
-    return tbinfo, okng
+    if okng == True:
+        tb2info['적합성여부'] = 'True'
+    else:
+        tb2info['적합성여부'] = 'False'
+
+    return tb2info, okng
 
 
 # 사전규격 상세 (물품) 페이지 읽는 함수
