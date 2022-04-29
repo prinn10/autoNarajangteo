@@ -4,7 +4,8 @@
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-import test
+import tools
+import readPreStandardDetailPage
 import pywinauto
 from pywinauto import application
 from pywinauto.application import Application
@@ -70,6 +71,8 @@ driver.switch_to.frame(driver.find_element_by_name('main'))
 #         print(y[i][j],end='  ')
 #     print()
 
-tbinfo, okng = test.readPage(driver) # 페이지 정보 읽기
+tbinfo, okng = readPreStandardDetailPage.readPage(driver) # 페이지 정보 읽기
+tools.writeMetainfo(tbinfo)
+
 print(tbinfo)
 print(okng)
