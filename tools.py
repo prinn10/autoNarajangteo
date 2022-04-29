@@ -36,6 +36,8 @@ def waitFileDownload(download_path):
         if all_check == False:
             break
 
+
+
 #
 # wb = xl.load_workbook('크롤링.xlsx')
 # for sheet_nm in wb.sheetnames:
