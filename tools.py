@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 
 def writeTb1(tbinfo): # 크롤링 데이터 메타정보 저장함수
@@ -45,8 +46,8 @@ def waitFileDownload(download_path):
 
 def driverInit(driver):
     driver.switch_to.default_content()
-    driver.switch_to.frame(driver.find_element_by_name('sub'))
-    driver.switch_to.frame(driver.find_element_by_name('main'))
-    driver.implicitly_wait(5)
+    driver.switch_to.frame(driver.find_element(By.NAME, 'sub'))
+    driver.switch_to.frame(driver.find_element(By.NAME, 'main'))
+    # driver.implicitly_wait(5)
 
     return driver

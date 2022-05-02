@@ -4,6 +4,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 from collections import defaultdict
 
 import time
@@ -16,20 +20,25 @@ import tools
 tb2_keys = ['참조번호', '사전규격등록번호', '품명','품명(사업명)','사업명', '배정예산액', '관련 사전규격번호', '공개일시', '의견등록마감일시', '공고기관', '수요기관', 'SW사업대상여부', '납품(완수)기한\n(납품일수)', '규격서 파일', '적합성여부']
 tb3_keys = ['사전규격등록번호', '파일명', '0036', '8111179901', '4321150102']
 def readPage(driver):
+    driver.switch_to.default_content()
+    element = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.ID, "sub"))
+    )
+    print(1)
     driver = tools.driverInit(driver)
     download_path = 'C:\\Users\\정희운\\Downloads'
     # 1. 테이블 정보 읽어오기
-    table = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/table')
-    tbody = table.find_element_by_tag_name("tbody")
+    table = driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[2]/table')
+    tbody = table.find_element(By.TAG_NAME, "tbody")
     tb2info = tools.initListDict(tb2_keys)
     tb3info = tools.initListDict(tb3_keys)
-    for tr in tbody.find_elements_by_tag_name("tr"):
+    for tr in tbody.find_elements(By.TAG_NAME, "tr"):
         th_list = []
-        for th in tr.find_elements_by_tag_name("th"):
+        for th in tr.find_elements(By.TAG_NAME, "th"):
             print(th.get_attribute("innerText"))
             th_list.append(th.get_attribute("innerText"))
         td_list = []
-        for td in tr.find_elements_by_tag_name("td"):
+        for td in tr.find_elements(By.TAG_NAME, "td"):
             print(td.get_attribute("innerText"))
             td_list.append(td.get_attribute("innerText"))
 
@@ -48,7 +57,7 @@ def readPage(driver):
     ## 2.1. 첨부파일 다운로드
     downloadCheck = False
     ### 2.1.1. 규격서 파일 다운로드
-    file_list = driver.find_elements_by_xpath('/html/body/div[2]/div[2]/div[2]/table/tbody/tr[8]/td/div/a')
+    file_list = driver.find_elements(By.XPATH, '/html/body/div[2]/div[2]/div[2]/table/tbody/tr[8]/td/div/a')
     if len(file_list) != 0:
         print('파일 개수', len(file_list))
         downloadCheck = True
@@ -61,8 +70,8 @@ def readPage(driver):
 
     ### 2.1.2. [첨부파일 (e-발주시스템)] 다운로드
     try:
-        driver.switch_to.frame(driver.find_element_by_id('eRfpReqIframe'))
-        driver.find_element_by_class_name('file_name').click()
+        driver.switch_to.frame(driver.find_element(By.ID, 'eRfpReqIframe'))
+        driver.find_element(By.CLASS_NAME, 'file_name').click()
         print('[첨부파일 (e-발주시스템)] 다운로드 완료')
         downloadCheck = True
         driver = tools.driverInit(driver)
@@ -88,7 +97,7 @@ def readPage(driver):
                 res_list = readHWP.advanced_open_and_findtext(os.path.join(download_path, file), keyword_list)
                 for res, keyword in zip(res_list, keyword_list):
                     if res == True:
-                        print(file, keyword,'존재확인')
+                        print(file, keyword, '존재확인')
                         tb3info[keyword].append('True')
                         okng = True
                     else:
@@ -97,7 +106,7 @@ def readPage(driver):
             else:
                 for keyword in keyword_list:
                     tb3info[keyword].append('None')
-            os.remove(os.path.join(download_path, file)) # 확인 후 해당 파일 삭제
+            os.remove(os.path.join(download_path, file))  # 확인 후 해당 파일 삭제
     else:
         print('다로드된 파일이 없음')
 
@@ -112,6 +121,8 @@ def readPage(driver):
     # print(tb3info.keys())
 
     return tb2info, tb3info, okng
+
+
 
 
 # 사전규격 상세 (물품) 페이지 읽는 함수
