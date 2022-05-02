@@ -51,3 +51,12 @@ def driverInit(driver):
     # driver.implicitly_wait(5)
 
     return driver
+
+def unzip(zip_file_name, download_path):
+    with zipfile.ZipFile(os.path.join(download_path, zip_file_name), 'r') as zf:
+        zipinfo = zf.infolist()
+        for member in zipinfo:
+            member.filename = member.filename.encode('cp437').decode('euc-kr')
+            zf.extract(member, download_path)
+
+    os.remove(os.path.join(download_path, zip_file_name))

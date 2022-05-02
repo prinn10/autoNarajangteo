@@ -94,6 +94,10 @@ def readPage(driver):
 
         file_list = os.listdir(download_path)
         print(file_list)
+        for file in file_list:
+            if file.find('.zip') != -1:
+                tools.unzip(file, download_path)
+
         keyword_list = ['0036', '8111179901', '4321150102']
         for j, file in enumerate(file_list):
             tb3info['사전규격등록번호'].append(tb2info['사전규격등록번호'][0])
