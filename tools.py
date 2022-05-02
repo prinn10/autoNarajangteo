@@ -47,5 +47,6 @@ def driverInit(driver):
     driver.switch_to.default_content()
     driver.switch_to.frame(driver.find_element_by_name('sub'))
     driver.switch_to.frame(driver.find_element_by_name('main'))
+    driver.implicitly_wait(5)
 
     return driver

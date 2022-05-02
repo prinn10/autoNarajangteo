@@ -16,9 +16,7 @@ import tools
 tb2_keys = ['참조번호', '사전규격등록번호', '품명','품명(사업명)','사업명', '배정예산액', '관련 사전규격번호', '공개일시', '의견등록마감일시', '공고기관', '수요기관', 'SW사업대상여부', '납품(완수)기한\n(납품일수)', '규격서 파일', '적합성여부']
 tb3_keys = ['사전규격등록번호', '파일명', '0036', '8111179901', '4321150102']
 def readPage(driver):
-    sleep(2)
-
-
+    driver = tools.driverInit(driver)
     download_path = 'C:\\Users\\정희운\\Downloads'
     # 1. 테이블 정보 읽어오기
     table = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/table')
