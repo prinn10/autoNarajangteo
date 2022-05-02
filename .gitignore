@@ -301,3 +301,6 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,pycharm,python
 *.csv
+tb1.csv
+tb2.csv
+tb3.csv
