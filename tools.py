@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-
+import zipfile
 
 def writeTb1(tbinfo): # 크롤링 데이터 메타정보 저장함수
     db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
@@ -58,5 +58,3 @@ def unzip(zip_file_name, download_path):
         for member in zipinfo:
             member.filename = member.filename.encode('cp437').decode('euc-kr')
             zf.extract(member, download_path)
-
-    os.remove(os.path.join(download_path, zip_file_name))

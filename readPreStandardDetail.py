@@ -96,7 +96,8 @@ def readPage(driver):
         print(file_list)
         for file in file_list:
             if file.find('.zip') != -1:
-                tools.unzip(file, download_path)
+                tools.unzip(str(file), download_path)
+                file_list = os.listdir(download_path)
 
         keyword_list = ['0036', '8111179901', '4321150102']
         for j, file in enumerate(file_list):
