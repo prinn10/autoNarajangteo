@@ -19,9 +19,11 @@ import tools
 
 tb2_keys = ['참조번호', '사전규격등록번호', '품명','품명(사업명)','사업명', '배정예산액', '관련 사전규격번호', '공개일시', '의견등록마감일시', '공고기관', '수요기관', 'SW사업대상여부', '납품(완수)기한\n(납품일수)', '규격서 파일', '적합성여부']
 tb3_keys = ['사전규격등록번호', '파일명', '0036', '8111179901', '4321150102']
-download_etx['.hwp', '.zip']
+download_etx = ['.hwp', '.zip']
 
 def readPage(driver):
+    onemean = 0.0
+    onecunt = 0
     driver.switch_to.default_content()
     element = WebDriverWait(driver, 5).until(
         EC.presence_of_element_located((By.ID, "sub"))
@@ -65,6 +67,7 @@ def readPage(driver):
         downloadCheck = True
         for file in file_list:
             print('파일 다운로드')
+            onecunt += 1
             file.click()
             sleep(1)
     else:
@@ -112,7 +115,8 @@ def readPage(driver):
     else:
         print('다로드된 파일이 없음')
 
-    print("적합성 여부 판단 시간 :", time.time() - start)
+    onemean = time.time() - start
+    print("적합성 여부 판단 시간 :", onemean)
 
     if okng == True:
         tb2info['적합성여부'] = 'True'
@@ -122,7 +126,7 @@ def readPage(driver):
     # print(tb2info.keys())
     # print(tb3info.keys())
 
-    return tb2info, tb3info, okng
+    return tb2info, tb3info, okng, onemean, onecunt
 
 
 

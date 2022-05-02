@@ -23,6 +23,11 @@ from time import sleep
 import readPreStandardDetail
 import tools
 
+tstart = time.time()
+tenmean = 0.0
+tencunt = 0
+onemean = 0.0
+onecunt = 0
 
 chrome_options = Options()
 chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
@@ -32,6 +37,9 @@ driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options
 driver = tools.driverInit(driver)
 
 def moveNextPage(driver):
+    global tencunt
+    tencunt += 1
+
     sleep(2)
     driver = tools.driverInit(driver)
 
@@ -116,7 +124,10 @@ while True:
         driver.find_element(By.XPATH, '/html/body/div/div[2]/div/table/tbody/tr['+str(i)+']/td[4]/div/a').click()
 
         ##사전규격세부 읽고 처리##
-        tb2info, tb3info, okng = readPreStandardDetail.readPage(driver) # 페이지 정보 읽기
+        tb2info, tb3info, okng, mean, cunt = readPreStandardDetail.readPage(driver) # 페이지 정보 읽기
+        onemean += mean
+        onecunt += cunt
+
         tools.writeTb2(tb2info)
         tools.writeTb3(tb3info)
         if okng == True:
@@ -128,8 +139,15 @@ while True:
         driver.back()
 
     tools.writeTb1(tb1info)
+    tenmean += time.time() - start
     print("10개 처리 시간 :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
     if moveNextPage(driver) == False:
         break
+
+print("총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
+print(tenmean , tencunt)
+print("10개 평균 처리 시간", tenmean / tencunt)
+print(onemean, onecunt)
+print("파일 영업 적합성 검사 시간", onemean / onecunt)
 
 
