@@ -96,9 +96,7 @@ def moveNextPage(driver):
 # sleep(1)
 
 #목록 정보 추출
-finally_page_check = True
-while finally_page_check:
-    finally_page_check = True
+while True:
     start = time.time()  # 시작 시간 저장
 
     tb1_keys = ['No.','등록번호','참조번호','품명','수요기관','사전규격공개일시','업체등록의견수','적합성여부']
@@ -130,7 +128,8 @@ while finally_page_check:
         driver.back()
 
     tools.writeTb1(tb1info)
-    finally_page_check = moveNextPage(driver)
-
     print("10개 처리 시간 :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간
+    if moveNextPage(driver) == False:
+        break
+
 
