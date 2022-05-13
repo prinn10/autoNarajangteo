@@ -3,12 +3,20 @@
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/Chrome_debug_temp"
 from collections import defaultdict
 
+import os
+print(os.getcwd())
 # 셀레니움
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+
+# chrome 최신 버전 설치하는 코드(작동 불가능)
+# from webdriver_manager.chrome import ChromeDriverManager
+# driver = webdriver.Chrome(ChromeDriverManager().install())
+# C:\Anaconda3\envs\autorecipe 크롬 드라이버 위치 (버전이슈 생길 때 해당 버전에 맞는 chromedirver를 설치해서 저기 경로 안에 있는 chromedriver와 교체해주면 됨)
+
 
 import pywinauto
 from pywinauto import application
