@@ -88,6 +88,13 @@ def ListCrawling():
         else:
             nu_len += 1
             driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/table/tbody/tr['+str(i+1)+']/td[11]/div/a').click() # 해당 행이 개찰완료이면 개찰완료 버튼 클릭
+            sleep(2) # 속도 수정
+            # 개찰완료 페이지
+            # 1. 입찰결과
+            bid_res_crawling()
+            # 2. 개찰순위
+            open_bid_rank_crawling()
+            # 3. 공고 상세
             sleep(1) # 이부분 속도 수정
             driver.back()
             sleep(1)
@@ -115,7 +122,7 @@ def ResultCrawling():
 # 물품개찰결과상세조회 페이지
 def bid_res_crawling(): # 입찰결과 테이블 크롤링 함수
     # 1. 입찰결과 테이블 키 값 리스트 정의
-    bid_res_keys = ['입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관', '실제개찰일시', '복수예비가 및 예정가격', '적격심사결과', '유의사항']
+    bid_res_keys = ['입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관', '실제개찰일시', '복수예비가 및\n예정가격', '적격심사결과', '유의사항']
 
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
@@ -124,7 +131,7 @@ def bid_res_crawling(): # 입찰결과 테이블 크롤링 함수
 
     table = driver.find_element(By.XPATH, '/html/body/div/div[2]/form[1]/div[2]/table')
     tbody = table.find_element(By.TAG_NAME, "tbody")
-    tb2info = tools.initListDict(tb2_keys)
+    tb2info = tools.initListDict(bid_res_keys)
     for tr in tbody.find_elements(By.TAG_NAME, "tr"):
         th_list = []
         for th in tr.find_elements(By.TAG_NAME, "th"):
@@ -137,7 +144,15 @@ def bid_res_crawling(): # 입찰결과 테이블 크롤링 함수
 
         for i in range(len(th_list)):
             tb2info[th_list[i]].append(td_list[i])
-    print(tb2info)
+    # print(tb2info)
+
+    # 테이블 정보 출력
+    print(bid_res_keys)
+    for i in range(len(tb2info[bid_res_keys[0]])):
+        for key in bid_res_keys:
+            if key != '유의사항':
+                print(tb2info[key][i], end=' ')
+        print()
     pass
 
 def open_bid_rank_crawling(): # 개찰결과순위 테이블 크롤링 함수
@@ -174,9 +189,9 @@ def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크�
 
 if __name__ == '__main__':
     tstart = time.time()
-    # ListCrawling()
+    ListCrawling()
     # ResultCrawling()
-    bid_res_crawling()
+    # bid_res_crawling()
     # open_bid_rank_crawling()
 
     print("총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
