@@ -58,3 +58,5 @@ def unzip(zip_file_name, download_path):
         for member in zipinfo:
             member.filename = member.filename.encode('cp437').decode('euc-kr')
             zf.extract(member, download_path)
+
+
