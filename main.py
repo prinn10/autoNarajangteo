@@ -1,3 +1,5 @@
+# 1. 사전규격공개 크롤링 모듈
+
 #CMD
 # cd C:\Program Files\Google\Chrome\Application
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/Chrome_debug_temp"

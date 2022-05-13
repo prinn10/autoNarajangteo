@@ -1,3 +1,4 @@
+# 2. 개찰결과 크롤링 모듈
 # cd C:\Program Files\Google\Chrome\Application
 # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/Chrome_debug_temp"
 from collections import defaultdict
@@ -184,7 +185,16 @@ def open_bid_rank_crawling(): # 개찰결과순위 테이블 크롤링 함수
 
 
 def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크롤링 함수
+    # 수집 항목 : 사업금액(기초금액), 낙찰하한율, 범위
+    # 사업금액 : 물품입찰공고상세페이지 참조
+    # 낙찰하한율 : 공고문에서 낙찰하한율 검색
+    # 범위 : 공고문에서 +- 검색
+
     # 1. 공고문 읽기
+    file_name = 'hwp' # 수정
+    findWord = ['±', '낙찰하한율']
+    file_path = os.path.join(download_path, file_name)
+    readHWP.announcement_doc_crawling(findWord)
     pass
 
 if __name__ == '__main__':
