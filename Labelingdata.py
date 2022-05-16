@@ -199,14 +199,25 @@ def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크�
     # 2.입찰진행 및 진행 정보
     # bid_info_crawling()
     # 3. 예정가격 결정
+    # bid_cost_infomation()
+
     # 3. 투찰제한 - 일반
     xnkfwpgks()
 
     # 4. 가용금액 공개
+    rkdydrmador()
+
     # 5. 기초금액 공개
+    rlchrmador()
+
     # 6. 구매대상물품
-    # 7. 첨부 파일 
+    rnaoeotkd()
+
+    # 7. 첨부 파일
+    cjaqnvkdlf()
+
     # 8. 입찰진행현황
+    dlqckfwlsgod()
 
     # 공고문 수집 항목
     # 낙찰하한율 : 공고문에서 낙찰하한율 검색
@@ -233,7 +244,7 @@ def announcement_common_crawling(): # 1. 공고 일반
     print(tb_info.items())
 
     pass
-def bid_info_crawling(): # 2. 입찰진행 및 진행 정보
+def bid_info_crawling(): # 3. 예정가격 결정 및 입찰금액 정보
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
@@ -258,8 +269,17 @@ def xnkfwpgks(): # 3. 투찰제한 - 일반
     print(tb_info.items())
     pass
 
-def bid_cost_infomation(): # 3. 예정가격 결정 및 입찰금액 정보
+def bid_cost_infomation(): # 2. 입찰진행 및 진행정보
+    chrome_options = Options()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+    driver = tools.driverInit(driver)
 
+    bid_info_keys = ['입찰개시일시', '입찰마감일시', '개찰(입찰)일시', '물품등록구분', '개찰(입찰)일시','개찰장소','입찰참가자격등록\n마감일시','보증서접수마감일시','실적심사신청서','실적심사신청서\n신청기한','공동수급협정서\n접수여부','동가입찰 낙찰자\n자동추첨프로그램','공동수급협정서\n마감일시','연구개발물품여부']
+
+    tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[7]/table', bid_info_keys,
+                                    debug_mode=True)
+    print(tb_info.items())
     pass
 
 def announce_doc():
@@ -269,6 +289,23 @@ def announce_doc():
     range, min_value = readHWP.announcement_doc_crawling(file_path, findWord) # 범위, 낙찰하한율 반환
 
     return range, min_value
+
+# 4. 가용금액 공개
+def rkdydrmador():
+    pass
+# 5. 기초금액 공개
+def rlchrmador():
+    pass
+# 6. 구매대상물품
+def rnaoeotkd():
+    pass
+# 7. 첨부 파일
+def cjaqnvkdlf():
+    pass
+# 8. 입찰진행현황
+def dlqckfwlsgod():
+    pass
+
 if __name__ == '__main__':
     tstart = time.time()
     announcement_detail_crawling()
