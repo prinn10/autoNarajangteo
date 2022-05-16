@@ -41,6 +41,8 @@ import tools
 ## 2.1.1. 개찰 데이터 수집
 
 #Move Next Page
+table_element_list = []
+
 def move_next_page():
     # 현재 페이지 출력
     # 마지막 페이지인지 확인 여부 출력
@@ -183,10 +185,6 @@ def open_bid_rank_crawling(): # 개찰결과순위 테이블 크롤링 함수
             print(tb1info[key][i], end=' ')
         print()
 
-
-announcement_common_keys = ['공고종류', '게시일시', '입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관','검사','검수','입찰방식','낙찰방법','계약방법'
-                                ,'국제입찰구분','재입찰','채권자명','발주계획통합번호','사전규격등록번호','사전규격 미공개사유','국내/국제 입찰사유','입찰자격','관련공고']
-
     tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[5]/table' ,announcement_common_keys, debug_mode = True)
     print(tb_info.items())
 
@@ -222,7 +220,7 @@ def bid_cost_infomation(): # 2. 입찰진행 및 진행정보
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
-    bid_info_keys = ['입찰개시일시', '입찰마감일시', '개찰(입찰)일시', '물품등록구분', '개찰(입찰)일시','개찰장소','입찰참가자격등록\n마감일시','보증서접수마감일시','실적심사신청서','실적심사신청서\n신청기한','공동수급협정서\n접수여부','동가입찰 낙찰자\n자동추첨프로그램','공동수급협정서\n마감일시','연구개발물품여부']
+
 
     tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[7]/table', bid_info_keys,
                                     debug_mode=True)
@@ -238,12 +236,21 @@ def announce_doc():
     return range, min_value
 
 # 1. 공고 일반
-announcement_common_keys = ['공고종류', '게시일시', '입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관','검사','검수','입찰방식','낙찰방법','계약방법','국제입찰구분','재입찰','채권자명','발주계획통합번호','사전규격등록번호','사전규격 미공개사유','국내/국제 입찰사유','입찰자격','관련공고']
-bid_info_keys = ['예가방법', '추첨번호공개여부', '사업금액\n(추정가격 + 부가세)', '추정가격', '배정예산']
+announcement_common_keys = ['공고종류', '게시일시', '입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관','검사','검수','입찰방식','낙찰방법','계약방법','국제입찰구분','재입찰','채권자명','발주계획통합번호','사전규격등록번호','사전규격 미공개사유','국내/국제 입찰사유','WTO수의계약사유','입찰자격','관련공고']
+# 2.입찰집행 및 진행 정보
+dlqckfwlqgod_keys = ['입찰개시일시', '입찰마감일시', '개찰(입찰)일시', '물품등록구분', '개찰(입찰)일시','개찰장소','입찰참가자격등록\n마감일시','보증서접수마감일시','실적심사신청서','실적심사신청서\n신청기한','공동수급협정서\n접수여부','동가입찰 낙찰자\n자동추첨프로그램','공동수급협정서\n마감일시','연구개발물품여부']
+# 3. 예정가격 결정 및 입찰금액 정보
+dPwjdrkrur_keys = ['예가방법', '추첨번호공개여부', '사업금액\n(추정가격 + 부가세)', '추정가격', '배정예산']
+# 4. 투찰제한 - 일반
+xnckfwpgks_keys = ['지역제한', '참가가능지역', '지사투찰허용여부', '업종제한', '물품분류제한여부', '물품등록구분', '공동수급체 구성원 지역제한적용여부']
+# 5. 가용금액공개
 rkdydrmador_keys = ['입찰분류', '가용금액']
+# 6. 기초금액 공개
 rlchrmador_keys = ['분류', '기초금액','비고','상세보기']
+# 7. 구매대상물품
 rnaoeotkd1_keys = ['분류', '수요기관', '세부품명', '납품장소'] # table type3 :  속성이 나눠져있음
 rnaoeotkd2_keys = ['수량','단위','추정 단가(원)','세부품명번호','규격','납품 기한(일수)','인도 조건']
+# 8. 입찰진행현황
 dlqckfwlsgod_keys = ['입찰공고번호', '재입찰번호','공고명','개찰일시','진행현황']
 
 def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크롤링 함수, 함수 이름 바꿔야댐
@@ -298,10 +305,22 @@ def announcement_common_crawling(): # 1. 공고 일반
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
-    tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[5]/table' ,announcement_common_keys, debug_mode = True)
+    tb_info = tools.advanced_table_info_read(driver, table_element_list[0] ,announcement_common_keys, debug_mode = True)
     print(tb_info.items())
 
     pass
+
+def bid_cost_infomation(): # 2. 입찰집행 및 진행정보
+    chrome_options = Options()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+    driver = tools.driverInit(driver)
+
+    tb_info = tools.advanced_table_info_read(driver, table_element_list[1], dlqckfwlqgod_keys,
+                                    debug_mode=True)
+    print(tb_info.items())
+    pass
+
 def bid_info_crawling(): # 3. 예정가격 결정 및 입찰금액 정보
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
@@ -310,55 +329,32 @@ def bid_info_crawling(): # 3. 예정가격 결정 및 입찰금액 정보
 
     bid_info_keys = ['예가방법', '추첨번호공개여부', '사업금액\n(추정가격 + 부가세)', '추정가격', '배정예산']
 
-    tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[9]/table', bid_info_keys,
+    tb_info = tools.advanced_table_info_read(driver, table_element_list[2], dPwjdrkrur_keys,
                                     debug_mode=True)
     print(tb_info.items())
     pass
-def xnkfwpgks(): # 3. 투찰제한 - 일반
+def xnkfwpgks(): # 4. 투찰제한 - 일반
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
-    bid_info_keys = ['지역제한', '업종제한', '물품분류제한여부', '물품등록구분', '공동수급체 구성원 지역제한적용여부']
-
-    tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[11]/table', bid_info_keys,
+    tb_info = tools.advanced_table_info_read(driver, table_element_list[3], xnckfwpgks_keys,
                                     debug_mode=True)
     print(tb_info.items())
     pass
 
-def bid_cost_infomation(): # 2. 입찰진행 및 진행정보
-    chrome_options = Options()
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
-    driver = tools.driverInit(driver)
-
-    bid_info_keys = ['입찰개시일시', '입찰마감일시', '개찰(입찰)일시', '물품등록구분', '개찰(입찰)일시','개찰장소','입찰참가자격등록\n마감일시','보증서접수마감일시','실적심사신청서','실적심사신청서\n신청기한','공동수급협정서\n접수여부','동가입찰 낙찰자\n자동추첨프로그램','공동수급협정서\n마감일시','연구개발물품여부']
-
-    tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[7]/table', bid_info_keys,
-                                    debug_mode=True)
-    print(tb_info.items())
-    pass
-
-def announce_doc():
-    file_name = 'hwp' # 수정
-    findWord = ['±', '낙찰하한율']
-    file_path = os.path.join(download_path, file_name)
-    range, min_value = readHWP.announcement_doc_crawling(file_path, findWord) # 범위, 낙찰하한율 반환
-
-    return range, min_value
-
-# 4. 가용금액 공개
+# 5. 가용금액 공개
 def rkdydrmador():
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
-    rkdydrmador_keys = ['입찰분류', '가용금액']
+
     tb1info = tools.initListDict(rkdydrmador_keys)
 
-    table = driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[13]/table') # 리스트 타입의 테이블을 읽어들임
+    table = table_element_list[4] # 리스트 타입의 테이블을 읽어들임
     tbody = table.find_element(By.TAG_NAME, "tbody")
     rows = tbody.find_elements(By.TAG_NAME, "tr")
     for i, value in enumerate(rows):
@@ -375,24 +371,23 @@ def rkdydrmador():
     print(tb1info.items())
     pass
 
-# 5. 기초금액 공개
+# 6. 기초금액 공개
 def rlchrmador():
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
-    rlchrmador_keys = ['분류', '기초금액','비고','상세보기']
     tb1info = tools.initListDict(rlchrmador_keys)
 
-    table = driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[16]/table') # 리스트 타입의 테이블을 읽어들임
+    table = table_element_list[5] # 리스트 타입의 테이블을 읽어들임
     tbody = table.find_element(By.TAG_NAME, "tbody")
     rows = tbody.find_elements(By.TAG_NAME, "tr")
     for i, value in enumerate(rows):
         for j in range(len(rlchrmador_keys)):
             # 데이터가 없을 경우
-            if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.':
-                tb1info[rkdydrmador_keys[j]].append('')
+            if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.' or value.text == '자료없음':
+                tb1info[rlchrmador_keys[j]].append('')
             # 데이터가 있을 경우
             else:
                 body=value.find_elements(By.TAG_NAME,"td")[j]
@@ -403,20 +398,18 @@ def rlchrmador():
 
     pass
 
-# 6. 구매대상물품
+# 7. 구매대상물품
 def rnaoeotkd():
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
-    rnaoeotkd1_keys = ['분류', '수요기관', '세부품명', '납품장소'] # table type3 :  속성이 나눠져있음
-    rnaoeotkd2_keys = ['수량','단위','추정 단가(원)','세부품명번호','규격','납품 기한(일수)','인도 조건']
+    keys1 = rnaoeotkd1_keys.copy()
+    keys2 = rnaoeotkd2_keys.copy()
+    tb1info = tools.initListDict(keys1 + keys2)
 
-
-    tb1info = tools.initListDict(rnaoeotkd1_keys+rnaoeotkd2_keys)
-
-    table = driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[19]/table') # 리스트 타입의 테이블을 읽어들임
+    table = table_element_list[6] # 리스트 타입의 테이블을 읽어들임
     tbody = table.find_element(By.TAG_NAME, "tbody")
     rows = tbody.find_elements(By.TAG_NAME, "tr")
     for i, value in enumerate(rows):
@@ -448,10 +441,9 @@ def dlqckfwlsgod():
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
-    dlqckfwlsgod_keys = ['입찰공고번호', '재입찰번호','공고명','개찰일시','진행현황']
     tb1info = tools.initListDict(dlqckfwlsgod_keys)
 
-    table = driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[23]/table') # 리스트 타입의 테이블을 읽어들임
+    table = table_element_list[7] # 리스트 타입의 테이블을 읽어들임
     tbody = table.find_element(By.TAG_NAME, "tbody")
     rows = tbody.find_elements(By.TAG_NAME, "tr")
     for i, value in enumerate(rows):
@@ -469,8 +461,51 @@ def dlqckfwlsgod():
 
     pass
 
+def announce_doc():
+    file_name = 'hwp' # 수정
+    findWord = ['±', '낙찰하한율']
+    file_path = os.path.join(download_path, file_name)
+    range, min_value = readHWP.announcement_doc_crawling(file_path, findWord) # 범위, 낙찰하한율 반환
+
+    return range, min_value
+
+
+def search_table_xpath():
+    chrome_options = Options()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+    driver = tools.driverInit(driver)
+
+    table_list = ['공고일반','입찰집행','예정가격','투찰제한','가용금액공개','기초금액','구매대상','입찰진행현황']
+    table_keys_list = []
+    table_keys_list.append(announcement_common_keys)
+    table_keys_list.append(dlqckfwlqgod_keys)
+    table_keys_list.append(dPwjdrkrur_keys)
+    table_keys_list.append(xnckfwpgks_keys)
+    table_keys_list.append(rkdydrmador_keys)
+    table_keys_list.append(rlchrmador_keys)
+    table_keys_list.append(rnaoeotkd1_keys)
+    table_keys_list.append(dlqckfwlsgod_keys)
+    tables_xpath = driver.find_elements(By.TAG_NAME, 'table')  # 리스트 타입의 테이블을 읽어들임
+    for table, table_keys in zip(table_list, table_keys_list):
+        if table == '구매대상':
+            table_keys = rnaoeotkd1_keys.copy()
+            table_keys += rnaoeotkd2_keys.copy()
+
+        for table_xpath in tables_xpath:
+            s_b = False
+            for key in table_keys:
+                if table_xpath.text.find(key) != -1:
+                    table_element_list.append(table_xpath)
+                    s_b = True
+                    tables_xpath.remove(table_xpath)
+                    break
+            if s_b == True:
+                break
+
 if __name__ == '__main__':
     tstart = time.time()
+    search_table_xpath()
     announcement_detail_crawling()
     # ListCrawling()
     # ResultCrawling()
