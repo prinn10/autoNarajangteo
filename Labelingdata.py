@@ -208,7 +208,7 @@ def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크�
     # rkdydrmador()
 
     # 5. 기초금액 공개
-    rlchrmador()
+    # rlchrmador()
 
     # 6. 구매대상물품
     rnaoeotkd()
@@ -316,6 +316,7 @@ def rkdydrmador():
 
     print(tb1info.items())
     pass
+
 # 5. 기초금액 공개
 def rlchrmador():
     chrome_options = Options()
@@ -343,12 +344,43 @@ def rlchrmador():
     print(tb1info.items())
 
     pass
+
 # 6. 구매대상물품
 def rnaoeotkd():
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
+
+    rnaoeotkd1_keys = ['분류', '수요기관', '세부품명', '납품장소'] # table type3 :  속성이 나눠져있음
+    rnaoeotkd2_keys = ['수량','단위','추정 단가(원)','세부품명번호','규격','납품 기한(일수)','인도 조건']
+
+
+    tb1info = tools.initListDict(rnaoeotkd1_keys+rnaoeotkd2_keys)
+
+    table = driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[19]/table') # 리스트 타입의 테이블을 읽어들임
+    tbody = table.find_element(By.TAG_NAME, "tbody")
+    rows = tbody.find_elements(By.TAG_NAME, "tr")
+    for i, value in enumerate(rows):
+        if i == 0:
+            continue
+        elif i == 1:
+            keys = rnaoeotkd1_keys
+        else:
+            keys = rnaoeotkd2_keys
+        for j in range(len(keys)):
+            # 데이터가 없을 경우
+            if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.':
+                tb1info[keys[j]].append('')
+            # 데이터가 있을 경우
+            else:
+                body=value.find_elements(By.TAG_NAME,"td")[j]
+                # print(body.text) # debug
+                tb1info[keys[j]].append(body.text)
+
+    print(tb1info.items())
+
+
     pass
 # 7. 첨부 파일
 def cjaqnvkdlf():
