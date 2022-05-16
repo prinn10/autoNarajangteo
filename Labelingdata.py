@@ -184,24 +184,57 @@ def open_bid_rank_crawling(): # 개찰결과순위 테이블 크롤링 함수
         print()
 
 
-def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크롤링 함수
-    # 수집 항목 : 사업금액(기초금액), 낙찰하한율, 범위
+def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크롤링 함수, 함수 이름 바꿔야댐
+    chrome_options = Options()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+    driver = tools.driverInit(driver)
+
+    # 수집 항목 : 사업금액, 배정예산, 지역제한, 기초금액, 낙찰하한율, 범위
+    # 페이지 수집 항목
     # 사업금액 : 물품입찰공고상세페이지 참조
+    # 1. 공고 일반
+    announcement_common_crawling()
+    # 2.입찰진행 및 진행 정보
+    bid_info_crawling()
+
+    # 공고문 수집 항목
     # 낙찰하한율 : 공고문에서 낙찰하한율 검색
     # 범위 : 공고문에서 +- 검색
 
-    # 1. 공고문 읽기
+    # f. 입찰공고문 열람 확인버튼 클릭
+
+    # f. 공고문 다운로드
+
+    # ff. 공고문 읽기
     file_name = 'hwp' # 수정
     findWord = ['±', '낙찰하한율']
     file_path = os.path.join(download_path, file_name)
-    readHWP.announcement_doc_crawling(findWord)
+    range, min_value = readHWP.announcement_doc_crawling(file_path, findWord) # 범위, 낙찰하한율 반환
     pass
 
+def announcement_common_crawling(): # 1. 공고 일반
+    chrome_options = Options()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+    driver = tools.driverInit(driver)
+
+    pass
+def bid_info_crawling(): # 2. 입찰진행 및 진행 정보
+    chrome_options = Options()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+    driver = tools.driverInit(driver)
+
+    pass
 if __name__ == '__main__':
     tstart = time.time()
-    ListCrawling()
+    announcement_detail_crawling()
+    # ListCrawling()
     # ResultCrawling()
     # bid_res_crawling()
     # open_bid_rank_crawling()
+
+
 
     print("총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
