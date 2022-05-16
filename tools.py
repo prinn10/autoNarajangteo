@@ -26,6 +26,11 @@ def writeTb3(tbinfo): # 크롤링 데이터 메타정보 저장함수
 def writeTb4(tbinfo): # 크롤링 데이터 메타정보 저장함수
     pass
 
+def writeTb5(tbinfo, filename): # 물품입찰공고상세
+    db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
+    db.to_csv(filename+'.csv', mode='a', header=False, index=True, encoding='utf-8-sig')
+    pass
+
 def initListDict(keys):
     ListDict = {}
     for key in keys:
