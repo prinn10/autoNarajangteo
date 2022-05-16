@@ -59,43 +59,34 @@ def unzip(zip_file_name, download_path):
             member.filename = member.filename.encode('cp437').decode('euc-kr')
             zf.extract(member, download_path)
 
-
-def table_info_read(driver, table_xpath, table_keys, debug_mode = True): # 나라장터 테이블 양식을 크롤링하여 dic형태 반환하는 함수
-    tb1info = initListDict(table_keys)
-
-    table = driver.find_element(By.XPATH, table_xpath)
-    tbody = table.find_element(By.TAG_NAME, "tbody")
-    for tr in tbody.find_elements(By.TAG_NAME, "tr"):
-        th_list = []
-        for th in tr.find_elements(By.TAG_NAME, "th"):
-            print(th.get_attribute("innerText"))
-            th_list.append(th.get_attribute("innerText"))
-        td_list = []
-        for td in tr.find_elements(By.TAG_NAME, "td"):
-            print(td.get_attribute("innerText"))
-            td_list.append(td.get_attribute("innerText"))
-
-        for i in range(len(th_list)):
-            tb1info[th_list[i]].append(td_list[i])
-
-    return tb1info
-
-def advanced_table_info_read(driver, table_element, table_keys, debug_mode = True): # 나라장터 테이블 양식을 크롤링하여 dic형태 반환하는 함수
+# table type 1: tr th tr th
+def advanced_table_info_read(table_element, table_keys): # 나라장터 테이블 양식을 크롤링하여 dic형태 반환하는 함수
     tb1info = initListDict(table_keys)
 
     tbody = table_element.find_element(By.TAG_NAME, "tbody")
     for tr in tbody.find_elements(By.TAG_NAME, "tr"):
         th_list = []
         for th in tr.find_elements(By.TAG_NAME, "th"):
-            print(th.get_attribute("innerText"))
             th_list.append(th.get_attribute("innerText"))
         td_list = []
         for td in tr.find_elements(By.TAG_NAME, "td"):
-            print(td.get_attribute("innerText"))
             td_list.append(td.get_attribute("innerText"))
-
         for i in range(len(th_list)):
             tb1info[th_list[i]].append(td_list[i])
 
     return tb1info
 
+# table type 2: list
+def advanced_table1_info_read(table_element, table_keys): # 나라장터 테이블 양식을 크롤링하여 dic형태 반환하는 함수
+    tb1info = initListDict(table_keys)
+    tbody = table_element.find_element(By.TAG_NAME, "tbody")
+    rows = tbody.find_elements(By.TAG_NAME, "tr")
+    for i, value in enumerate(rows):
+        for j in range(len(table_keys)):
+            if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.' or value.find_element(By.TAG_NAME,"td").text == '자료없음': # 데이터가 없을 경우
+                tb1info[table_keys[j]].append('')
+            else: # 데이터가 있을 경우
+                body=value.find_elements(By.TAG_NAME,"td")[j]
+                tb1info[table_keys[j]].append(body.text)
+
+    return tb1info

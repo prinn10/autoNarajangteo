@@ -127,10 +127,6 @@ def bid_res_crawling(): # 입찰결과 테이블 크롤링 함수
     # 1. 입찰결과 테이블 키 값 리스트 정의
     bid_res_keys = ['입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관', '실제개찰일시', '복수예비가 및\n예정가격', '적격심사결과', '유의사항']
 
-    chrome_options = Options()
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
-    driver = tools.driverInit(driver)
 
     table = driver.find_element(By.XPATH, '/html/body/div/div[2]/form[1]/div[2]/table')
     tbody = table.find_element(By.TAG_NAME, "tbody")
@@ -259,43 +255,15 @@ def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크�
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
-    # 수집 항목 : 사업금액, 배정예산, 지역제한, 기초금액, 낙찰하한율, 범위
-    # 페이지 수집 항목
-    # 사업금액 : 물품입찰공고상세페이지 참조
-    # 1. 공고 일반
-    announcement_common_crawling()
-
-    # 2.입찰진행 및 진행 정보
-    bid_info_crawling()
-    # 3. 예정가격 결정
-    bid_cost_infomation()
-
-    # 3. 투찰제한 - 일반
-    xnkfwpgks()
-
-    # 4. 가용금액 공개
-    rkdydrmador()
-
-    # 5. 기초금액 공개
-    rlchrmador()
-
-    # 6. 구매대상물품
-    rnaoeotkd()
-
-    # 8. 입찰진행현황
+    announcement_common_crawling() # 1. 공고 일반
+    bid_info_crawling() # 2. 입찰집행 및 진행정보
+    bid_cost_infomation() # 3. 예정가격 결정 및 입찰금액 정보
+    xnkfwpgks() # 4. 투찰제한 - 일반
+    rkdydrmador() # 5. 가용금액 공개
+    rlchrmador() # 6. 기초금액 공개
+                    # 7. 구매대상물품
     dlqckfwlsgod()
 
-    # 7. 첨부 파일
-    # 공고문 수집 항목
-    # 낙찰하한율 : 공고문에서 낙찰하한율 검색
-    # 범위 : 공고문에서 +- 검색
-
-    # f. 입찰공고문 열람 확인버튼 클릭
-
-    # f. 공고문 다운로드
-
-    # ff. 공고문 읽기
-    # announce_doc()
 
     pass
 
@@ -344,8 +312,7 @@ def xnkfwpgks(): # 4. 투찰제한 - 일반
     print(tb_info.items())
     pass
 
-# 5. 가용금액 공개
-def rkdydrmador():
+def rkdydrmador(): # 5. 가용금액 공개
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
@@ -371,7 +338,6 @@ def rkdydrmador():
     print(tb1info.items())
     pass
 
-# 6. 기초금액 공개
 def rlchrmador():
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
@@ -398,8 +364,7 @@ def rlchrmador():
 
     pass
 
-# # 7. 구매대상물품
-# def rnaoeotkd():
+# def rnaoeotkd(): # 7. 구매대상물품
 #     chrome_options = Options()
 #     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 #     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
@@ -434,8 +399,7 @@ def rlchrmador():
 #
 #     pass
 
-# 8. 입찰진행현황
-def dlqckfwlsgod():
+def dlqckfwlsgod(): # 8. 입찰진행현황
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득

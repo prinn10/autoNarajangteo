@@ -128,8 +128,6 @@ def readPage(driver):
     else:
         tb2info['적합성여부'] = 'False'
 
-    # print(tb2info.keys())
-    # print(tb3info.keys())
 
     return tb2info, tb3info, okng, onemean, onecunt
 
