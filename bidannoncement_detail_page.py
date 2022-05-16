@@ -13,6 +13,7 @@ import time
 from time import sleep
 
 import tools
+import readHWP
 
 chrome_options = Options()
 chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
@@ -22,7 +23,7 @@ driver = tools.driverInit(driver)
 ## table elements
 table_element_list = []
 ## table names
-table_names = ['공고일반', '입찰진행 및 진행정보', '예정가격 결정 및 입찰금액 정보', '투찰제한 - 일반', '가용금액공개', '기초금액 공개', '구매대상물품', '입찰진행현황']
+table_names = ['공고일반', '입찰진행 및 진행정보', '예정가격 결정 및 입찰금액 정보', '투찰제한 - 일반', '가용금액공개', '기초금액 공개','구매대상물품', '첨부 파일', '입찰진행현황']
 
 ## info_tables : table dic 'table_name', table_keys'
 info_tables = tools.initListDict(table_names)
@@ -34,21 +35,38 @@ info_tables['가용금액공개'].append(['입찰분류', '가용금액'])
 info_tables['기초금액 공개'].append(['분류', '기초금액','비고','상세보기'])
 info_tables['구매대상물품'].append(['분류', '수요기관', '세부품명', '납품장소'])
 info_tables['구매대상물품'].append(['수량','단위','추정 단가(원)','세부품명번호','규격','납품 기한(일수)','인도 조건'])
+info_tables['첨부 파일'].append(['No.','문서구분','파일명'])
 info_tables['입찰진행현황'].append(['입찰공고번호', '재입찰번호','공고명','개찰일시','진행현황'])
 
 def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크롤링 함수, 함수 이름 바꿔야댐
     # 1. 물품 입찰공고 상세 페이지 table 정보 수집
-    tb1_info = tools.advanced_table_info_read(table_element_list[0], info_tables['공고일반'][0]) # 1. 공고 일반
-    tb2_info = tools.advanced_table_info_read(table_element_list[1], info_tables['입찰진행 및 진행정보'][0]) # 2. 입찰집행 및 진행정보
-    tb3_info = tools.advanced_table_info_read(table_element_list[2], info_tables['예정가격 결정 및 입찰금액 정보'][0]) # 3. 예정가격 결정 및 입찰금액 정보
-    tb4_info = tools.advanced_table_info_read(table_element_list[3], info_tables['투찰제한 - 일반'][0])  # 4. 투찰제한 - 일반
-    tb5_info = tools.advanced_table1_info_read(table_element_list[4], info_tables['가용금액공개'][0])  # 5. 가용금액 공개
-    tb6_info = tools.advanced_table1_info_read(table_element_list[5], info_tables['기초금액 공개'][0]) # 6. 기초금액 공개
-    tb8_info = tools.advanced_table1_info_read(table_element_list[7], info_tables['입찰진행현황'][0]) # 7.입찰진행현황
+    # tb1_info = tools.advanced_table_info_read(table_element_list[0], info_tables['공고일반'][0]) # 1. 공고 일반
+    # tb2_info = tools.advanced_table_info_read(table_element_list[1], info_tables['입찰진행 및 진행정보'][0]) # 2. 입찰집행 및 진행정보
+    # tb3_info = tools.advanced_table_info_read(table_element_list[2], info_tables['예정가격 결정 및 입찰금액 정보'][0]) # 3. 예정가격 결정 및 입찰금액 정보
+    # tb4_info = tools.advanced_table_info_read(table_element_list[3], info_tables['투찰제한 - 일반'][0])  # 4. 투찰제한 - 일반
+    # tb5_info = tools.advanced_table1_info_read(table_element_list[4], info_tables['가용금액공개'][0])  # 5. 가용금액 공개
+    # tb6_info = tools.advanced_table1_info_read(table_element_list[5], info_tables['기초금액 공개'][0]) # 6. 기초금액 공개
+    # # tb7_info = tools.advanced_table1_info_read(table_element_list[6], info_tables['기초금액 공개'][0]) # 7. 구매대상물품
+    tb8_info = tools.advanced_table1_info_read(table_element_list[7], info_tables['첨부 파일'][0]) # 8. 첨부 파일
+    # tb9_info = tools.advanced_table1_info_read(table_element_list[8], info_tables['입찰진행현황'][0]) # 9. 입찰진행현황
 
     # 2. 첨부파일 규격서 정보 수집
-    # 2.1. 공고서 다운로드
+    # 2.1. 공고서 탐색 및 다운로드
+    i = tb8_info['문서구분'].index('공고서')
+    tbody = table_element_list[7].find_element(By.TAG_NAME, "tbody")
+    rows = tbody.find_elements(By.TAG_NAME, "tr")
+    rows[i].find_elements(By.TAG_NAME,"td")[2].find_element(By.TAG_NAME,"a").click()
+
     # 2.2. 공고서 정보 수집
+    download_path = 'C:\\Users\\정희운\\Downloads'
+    tools.waitFileDownload(download_path)
+    sleep(2)
+    file_name = os.listdir(download_path)
+    findWord = ['±', '낙찰하한율']
+    range, min_value = readHWP.announcement_doc_crawling(os.path.join(download_path, file_name[0]), findWord) # 범위, 낙찰하한율 반환
+    os.remove(os.path.join(download_path, file_name[0]))  # 확인 후 해당 파일 삭제
+
+    return range, min_value
 
 
 # def rnaoeotkd(): # # 7. 구매대상물품
@@ -75,14 +93,14 @@ def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크�
 #                 body=value.find_elements(By.TAG_NAME,"td")[j]
 #                 tb1info[keys[j]].append(body.text)
 
-def announce_doc():
-    file_name = 'hwp' # 수정
-    findWord = ['±', '낙찰하한율']
-    file_path = os.path.join(download_path, file_name)
-    range, min_value = readHWP.announcement_doc_crawling(file_path, findWord) # 범위, 낙찰하한율 반환
-
-    return range, min_value
-
+# def announce_doc():
+#     file_name = 'hwp' # 수정
+#     findWord = ['±', '낙찰하한율']
+#     file_path = os.path.join(download_path, file_name)
+#     range, min_value = readHWP.announcement_doc_crawling(file_path, findWord) # 범위, 낙찰하한율 반환
+#
+#     return range, min_value
+#
 
 def search_table_xpath(): # table elements 탐색
     tables_xpath = driver.find_elements(By.TAG_NAME, 'table')  # 리스트 타입의 테이블을 읽어들임

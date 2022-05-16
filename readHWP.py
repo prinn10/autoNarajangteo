@@ -71,16 +71,18 @@ def announcement_doc_crawling(file_path, findWord = None):
     # print(txt[txt.find('±'):txt.find('±')+3])
     # print(txt[txt.find('낙찰하한율'):txt.find('낙찰하한율')+8])
 
-    range = 0 # 범위
-    min_value = 0 # 낙찰 하한율
     for word, r in zip(findWord, res):
         if r == True: # word가 공고문에서 존재할 때
             if word == '±': # range
                 range = txt[txt.find('±')+1:txt.find('±')+2]
             elif word == '낙찰하한율': # min_value
                 min_value = txt[txt.find('낙찰하한율')+6:txt.find('낙찰하한율')+8]
+        else:
+            if word == '±':  # range
+                range = ''
+            elif word == '낙찰하한율':  # min_value
+                min_value = ''
 
-    print(range, min_value)
     hwp.Quit()
     return range, min_value
 
