@@ -22,7 +22,6 @@ import pyautogui
 import time
 from time import sleep
 
-import readPreStandardDetail
 import tools
 
 # 개찰결과 데이터셋 수집 프로그램
