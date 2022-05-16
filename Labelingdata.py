@@ -323,14 +323,14 @@ def rlchrmador():
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
-    rkdydrmador_keys = ['입찰분류', '가용금액']
-    tb1info = tools.initListDict(rkdydrmador_keys)
+    rlchrmador_keys = ['분류', '기초금액','비고','상세보기']
+    tb1info = tools.initListDict(rlchrmador_keys)
 
-    table = driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[13]/table') # 리스트 타입의 테이블을 읽어들임
+    table = driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[16]/table') # 리스트 타입의 테이블을 읽어들임
     tbody = table.find_element(By.TAG_NAME, "tbody")
     rows = tbody.find_elements(By.TAG_NAME, "tr")
     for i, value in enumerate(rows):
-        for j in range(len(rkdydrmador_keys)):
+        for j in range(len(rlchrmador_keys)):
             # 데이터가 없을 경우
             if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.':
                 tb1info[rkdydrmador_keys[j]].append('')
@@ -338,9 +338,10 @@ def rlchrmador():
             else:
                 body=value.find_elements(By.TAG_NAME,"td")[j]
                 # print(body.text) # debug
-                tb1info[rkdydrmador_keys[j]].append(body.text)
+                tb1info[rlchrmador_keys[j]].append(body.text)
 
     print(tb1info.items())
+
     pass
 # 6. 구매대상물품
 def rnaoeotkd():
