@@ -211,10 +211,9 @@ def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크�
     # rlchrmador()
 
     # 6. 구매대상물품
-    rnaoeotkd()
+    # rnaoeotkd()
 
     # 7. 첨부 파일
-    cjaqnvkdlf()
 
     # 8. 입찰진행현황
     dlqckfwlsgod()
@@ -389,6 +388,26 @@ def dlqckfwlsgod():
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
+
+    dlqckfwlsgod_keys = ['입찰공고번호', '재입찰번호','공고명','개찰일시','진행현황']
+    tb1info = tools.initListDict(dlqckfwlsgod_keys)
+
+    table = driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[23]/table') # 리스트 타입의 테이블을 읽어들임
+    tbody = table.find_element(By.TAG_NAME, "tbody")
+    rows = tbody.find_elements(By.TAG_NAME, "tr")
+    for i, value in enumerate(rows):
+        for j in range(len(dlqckfwlsgod_keys)):
+            # 데이터가 없을 경우
+            if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.':
+                tb1info[dlqckfwlsgod_keys[j]].append('')
+            # 데이터가 있을 경우
+            else:
+                body=value.find_elements(By.TAG_NAME,"td")[j]
+                # print(body.text) # debug
+                tb1info[dlqckfwlsgod_keys[j]].append(body.text)
+
+    print(tb1info.items())
+
     pass
 
 if __name__ == '__main__':
