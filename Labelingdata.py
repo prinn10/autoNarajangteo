@@ -197,6 +197,12 @@ def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크�
     announcement_common_crawling()
     # 2.입찰진행 및 진행 정보
     bid_info_crawling()
+    # 3. 투찰제한 - 일반
+    # 4. 가용금액 공개
+    # 5. 기초금액 공개
+    # 6. 구매대상물품
+    # 7. 첨부 파일
+    # 8. 입찰진행현황
 
     # 공고문 수집 항목
     # 낙찰하한율 : 공고문에서 낙찰하한율 검색
@@ -218,6 +224,11 @@ def announcement_common_crawling(): # 1. 공고 일반
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
+    announcement_common_keys = ['공고종류', '게시일시', '입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관','검사','검수','입찰방식','낙찰방법','계약방법'
+                                ,'국제입찰구분','재입찰','채권자명','발주계획통합번호','사전규격등록번호','사전규격 미공개사유','국내/국제 입찰사유','입찰자격','관련공고']
+
+    tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[5]/table' ,announcement_common_keys, debug_mode = True)
+    print(tb_info.items())
 
     pass
 def bid_info_crawling(): # 2. 입찰진행 및 진행 정보
@@ -227,6 +238,10 @@ def bid_info_crawling(): # 2. 입찰진행 및 진행 정보
     driver = tools.driverInit(driver)
 
     pass
+
+def bid_cost_infomation(): # 3. 예정가격 결정 및 입찰금액 정보
+    pass
+
 if __name__ == '__main__':
     tstart = time.time()
     announcement_detail_crawling()

@@ -60,3 +60,22 @@ def unzip(zip_file_name, download_path):
             zf.extract(member, download_path)
 
 
+def table_info_read(driver, table_xpath, table_keys, debug_mode = True): # 나라장터 테이블 양식을 크롤링하여 dic형태 반환하는 함수
+    tb1info = initListDict(table_keys)
+
+    table = driver.find_element(By.XPATH, table_xpath)
+    tbody = table.find_element(By.TAG_NAME, "tbody")
+    for tr in tbody.find_elements(By.TAG_NAME, "tr"):
+        th_list = []
+        for th in tr.find_elements(By.TAG_NAME, "th"):
+            print(th.get_attribute("innerText"))
+            th_list.append(th.get_attribute("innerText"))
+        td_list = []
+        for td in tr.find_elements(By.TAG_NAME, "td"):
+            print(td.get_attribute("innerText"))
+            td_list.append(td.get_attribute("innerText"))
+
+        for i in range(len(th_list)):
+            tb1info[th_list[i]].append(td_list[i])
+
+    return tb1info
