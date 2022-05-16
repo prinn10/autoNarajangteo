@@ -398,41 +398,41 @@ def rlchrmador():
 
     pass
 
-# 7. 구매대상물품
-def rnaoeotkd():
-    chrome_options = Options()
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
-    driver = tools.driverInit(driver)
-
-    keys1 = rnaoeotkd1_keys.copy()
-    keys2 = rnaoeotkd2_keys.copy()
-    tb1info = tools.initListDict(keys1 + keys2)
-
-    table = table_element_list[6] # 리스트 타입의 테이블을 읽어들임
-    tbody = table.find_element(By.TAG_NAME, "tbody")
-    rows = tbody.find_elements(By.TAG_NAME, "tr")
-    for i, value in enumerate(rows):
-        if i == 0:
-            continue
-        elif i == 1:
-            keys = rnaoeotkd1_keys
-        else:
-            keys = rnaoeotkd2_keys
-        for j in range(len(keys)):
-            # 데이터가 없을 경우
-            if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.':
-                tb1info[keys[j]].append('')
-            # 데이터가 있을 경우
-            else:
-                body=value.find_elements(By.TAG_NAME,"td")[j]
-                # print(body.text) # debug
-                tb1info[keys[j]].append(body.text)
-
-    print(tb1info.items())
-
-
-    pass
+# # 7. 구매대상물품
+# def rnaoeotkd():
+#     chrome_options = Options()
+#     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+#     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+#     driver = tools.driverInit(driver)
+#
+#     keys1 = rnaoeotkd1_keys.copy()
+#     keys2 = rnaoeotkd2_keys.copy()
+#     tb1info = tools.initListDict(keys1 + keys2)
+#
+#     table = table_element_list[6] # 리스트 타입의 테이블을 읽어들임
+#     tbody = table.find_element(By.TAG_NAME, "tbody")
+#     rows = tbody.find_elements(By.TAG_NAME, "tr")
+#     for i, value in enumerate(rows):
+#         if i == 0:
+#             continue
+#         elif i == 1:
+#             keys = rnaoeotkd1_keys
+#         else:
+#             keys = rnaoeotkd2_keys
+#         for j in range(len(keys)):
+#             # 데이터가 없을 경우
+#             if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.':
+#                 tb1info[keys[j]].append('')
+#             # 데이터가 있을 경우
+#             else:
+#                 body=value.find_elements(By.TAG_NAME,"td")[j]
+#                 # print(body.text) # debug
+#                 tb1info[keys[j]].append(body.text)
+#
+#     print(tb1info.items())
+#
+#
+#     pass
 
 # 8. 입찰진행현황
 def dlqckfwlsgod():
