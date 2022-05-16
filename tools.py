@@ -79,3 +79,4 @@ def table_info_read(driver, table_xpath, table_keys, debug_mode = True): # ë‚˜ë
             tb1info[th_list[i]].append(td_list[i])
 
     return tb1info
+
