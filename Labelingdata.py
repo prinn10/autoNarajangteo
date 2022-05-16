@@ -194,10 +194,14 @@ def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크�
     # 페이지 수집 항목
     # 사업금액 : 물품입찰공고상세페이지 참조
     # 1. 공고 일반
-    announcement_common_crawling()
+    # announcement_common_crawling()
+
     # 2.입찰진행 및 진행 정보
-    bid_info_crawling()
+    # bid_info_crawling()
+    # 3. 예정가격 결정 
     # 3. 투찰제한 - 일반
+    xnkfwpgks()
+
     # 4. 가용금액 공개
     # 5. 기초금액 공개
     # 6. 구매대상물품
@@ -213,10 +217,8 @@ def announcement_detail_crawling(): # 물품 입찰 공고 상세 페이지 크�
     # f. 공고문 다운로드
 
     # ff. 공고문 읽기
-    file_name = 'hwp' # 수정
-    findWord = ['±', '낙찰하한율']
-    file_path = os.path.join(download_path, file_name)
-    range, min_value = readHWP.announcement_doc_crawling(file_path, findWord) # 범위, 낙찰하한율 반환
+    # announce_doc()
+
     pass
 
 def announcement_common_crawling(): # 1. 공고 일반
@@ -237,11 +239,36 @@ def bid_info_crawling(): # 2. 입찰진행 및 진행 정보
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
 
+    bid_info_keys = ['예가방법', '추첨번호공개여부', '사업금액\n(추정가격 + 부가세)', '추정가격', '배정예산']
+
+    tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[9]/table', bid_info_keys,
+                                    debug_mode=True)
+    print(tb_info.items())
+    pass
+def xnkfwpgks(): # 3. 투찰제한 - 일반
+    chrome_options = Options()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+    driver = tools.driverInit(driver)
+
+    bid_info_keys = ['지역제한', '업종제한', '물품분류제한여부', '물품등록구분', '공동수급체 구성원 지역제한적용여부']
+
+    tb_info = tools.table_info_read(driver, '/html/body/div[2]/div[2]/div[11]/table', bid_info_keys,
+                                    debug_mode=True)
+    print(tb_info.items())
     pass
 
 def bid_cost_infomation(): # 3. 예정가격 결정 및 입찰금액 정보
+
     pass
 
+def announce_doc():
+    file_name = 'hwp' # 수정
+    findWord = ['±', '낙찰하한율']
+    file_path = os.path.join(download_path, file_name)
+    range, min_value = readHWP.announcement_doc_crawling(file_path, findWord) # 범위, 낙찰하한율 반환
+
+    return range, min_value
 if __name__ == '__main__':
     tstart = time.time()
     announcement_detail_crawling()
