@@ -89,7 +89,7 @@ def advanced_table1_info_read(table_element, table_keys): # 나라장터 테이�
     rows = tbody.find_elements(By.TAG_NAME, "tr")
     for i, value in enumerate(rows):
         for j in range(len(table_keys)):
-            if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.' or value.find_element(By.TAG_NAME,"td").text == '자료없음': # 데이터가 없을 경우
+            if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.' or value.find_element(By.TAG_NAME,"td").text == '자료없음' or value.find_element(By.TAG_NAME,"td").text == '첨부된 파일이 없습니다.': # 데이터가 없을 경우
                 tb1info[table_keys[j]].append('')
             else: # 데이터가 있을 경우
                 body=value.find_elements(By.TAG_NAME,"td")[j]

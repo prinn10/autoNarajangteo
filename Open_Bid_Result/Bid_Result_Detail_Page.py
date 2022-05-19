@@ -40,6 +40,10 @@ def bid_res_crawling(): # 입찰결과 테이블 크롤링 함수
         for i in range(len(th_list)):
             tb2info[th_list[i]].append(td_list[i])
 
+    for key in tb2info.keys():
+        if tb2info[key] == []:
+            tb2info[key].append('')
+
     # 테이블 정보 출력
     print(bid_res_keys)
     for i in range(len(tb2info[bid_res_keys[0]])):

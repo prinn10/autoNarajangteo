@@ -47,6 +47,13 @@ driver = tools.driverInit(driver)
 table_element_list = []
 
 def move_next_page():
+    chrome_options = Options()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+
+    driver = tools.driverInit(driver)
+
+    driver.find_element(By.XPATH, '/html/body/div/div[2]/div[3]/a').click()
     # 현재 페이지 출력
     # 마지막 페이지인지 확인 여부 출력
     pass
@@ -129,8 +136,6 @@ def ResultCrawling():
     # 1. 입찰결과 정보 수집
 
     # 2. 개찰순위 정보 수집
-
-
     pass
 # bid : 입찰, open_bid : 개찰, announcement : 공고
 def bid_info_crawling(): # 3. 예정가격 결정 및 입찰금액 정보
@@ -173,7 +178,10 @@ def bid_cost_infomation(): # 2. 입찰진행 및 진행정보
 
 def total_process():
     # 1. 개찰결과 목록 크롤링
-    ListCrawling()
+    while True:
+        ListCrawling()
+        move_next_page()
+        sleep(2)
     # 2. 개찰완료 페이지 순회
     # 2.1. 물품개찰결과 상세조회 페이지 크롤링
     # 2.2. 물품 입찰공고 상세 페이지 크롤링
