@@ -2,7 +2,7 @@ import openpyxl as xl
 import pandas as pd
 from time import sleep
 import os
-
+import re
 # 셀레니움
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -96,3 +96,22 @@ def advanced_table1_info_read(table_element, table_keys): # 나라장터 테이�
                 tb1info[table_keys[j]].append(body.text)
 
     return tb1info
+
+def extract_number(num_str): # num_str 문자열에서 숫자반 추출하여 반환
+    # numbers = re.sub(r'[^0-9]', '', num_str)
+    numbers = None
+    numbers = re.findall("\d+.\d+",num_str)
+    numbers += re.findall("\d+",num_str)
+    if numbers != []:
+        for i in range(len(numbers)):
+            if numbers[i].find('.') != -1:
+                numbers[i] = float(numbers[i])
+            else:
+                numbers[i] = int(numbers[i])
+        return numbers
+    else:
+        return None
+
+if __name__ == '__main__':
+    num = extract_number('대상으로 예정가격 이하로서 예정가격 대비  80.1243%이상 최저가 입찰자 순으로 <조달청 물품구매 적격심사 세부기준>에 따라 평가하여 종합평점이  이상인 자를 낙찰자로 결정')
+    print(num)

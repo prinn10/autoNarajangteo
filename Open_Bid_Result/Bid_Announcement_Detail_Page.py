@@ -45,15 +45,19 @@ def Init():
 def announcement_detail_crawling(table_names, table_element_list, info_tables): # 물품 입찰 공고 상세 페이지 크롤링 함수, 함수 이름 바꿔야댐
     # 1. 물품 입찰공고 상세 페이지 table 정보 수집
     tb_info = []
-    for table_name in table_names:
-        tb_info.append(tools.advanced_table_info_read(table_element_list[table_name][0], info_tables[table_name][0]))
+    for i, table_name in enumerate(table_names):
+        if table_name == '공고일반' or table_name == '입찰집행 및 진행 정보' or table_name == '예정가격 결정 및 입찰금액 정보':# table type 1(th td th td)
+            tb_info.append(tools.advanced_table_info_read(table_element_list[table_name][0], info_tables[table_name][0]))
+        elif table_name == '가용금액공개' or table_name == '기초금액 공개' or table_name == '첨부 파일' or table_name == '입찰진행현황': # table type 2 (list table)
+            tb_info.append(tools.advanced_table1_info_read(table_element_list[table_name][0], info_tables[table_name][0]))
         print('table_name : ', table_name)
+        print(tb_info[i])
 
     # 2. 첨부파일 규격서 정보 수집
     # 2.1. 공고서 탐색 및 다운로드
     try:
         i = tb_info[5]['문서구분'].index('공고서')
-        tbody = table_element_list[7].find_element(By.TAG_NAME, "tbody")
+        tbody = table_element_list['첨부 파일'][0].find_element(By.TAG_NAME, "tbody")
         rows = tbody.find_elements(By.TAG_NAME, "tr")
         rows[i].find_elements(By.TAG_NAME,"td")[2].find_element(By.TAG_NAME,"a").click()
 
@@ -62,10 +66,11 @@ def announcement_detail_crawling(table_names, table_element_list, info_tables): 
         tools.waitFileDownload(download_path)
         sleep(2)
         file_name = os.listdir(download_path)
-        findWord = ['±', '낙찰하한율']
+        findWord = ['±', '낙찰하한율', '예정가격']
         range, min_value = readHWP.announcement_doc_crawling(os.path.join(download_path, file_name[0]), findWord) # 범위, 낙찰하한율 반환
         os.remove(os.path.join(download_path, file_name[0]))  # 확인 후 해당 파일 삭제
         tb_info.append({'±': [range], '낙찰하한율': [min_value]})
+        print(tb_info[7])
     except:
         print('공고서 없음')
 
