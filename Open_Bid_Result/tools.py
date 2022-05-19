@@ -73,6 +73,7 @@ def advanced_table_info_read(table_element, table_keys): # 나라장터 테이�
         th_list = []
         for th in tr.find_elements(By.TAG_NAME, "th"):
             th_list.append(th.get_attribute("innerText"))
+
         td_list = []
         for td in tr.find_elements(By.TAG_NAME, "td"):
             td_list.append(td.get_attribute("innerText"))
