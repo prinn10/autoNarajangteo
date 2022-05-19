@@ -143,14 +143,12 @@ def search_table_xpath(table_element_list, info_tables): # table elements 탐색
 
     return table_element_list
 
-
-
 def Bid_Announcement_Detail_Page_Crawling():
+    tstart = time.time()
     table_names, table_element_list, info_tables = Init()
     table_element_list = search_table_xpath(table_element_list, info_tables)
     announcement_detail_crawling(table_names, table_element_list, info_tables)
+    print("Bid_Announcement_Detail_Page_Crawling 총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
 
 if __name__ == '__main__':
-    tstart = time.time()
     Bid_Announcement_Detail_Page_Crawling()
-    print("총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간

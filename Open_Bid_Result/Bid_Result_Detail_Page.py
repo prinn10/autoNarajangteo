@@ -76,10 +76,10 @@ def open_bid_rank_crawling(): # 개찰결과순위 테이블 크롤링 함수
         print()
 
 def Bid_Result_Detail_Page_Crawling():
+    tstart = time.time()
     bid_res_crawling()
     open_bid_rank_crawling()
+    print("Bid_Result_Detail_Page_Crawling 총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
 
 if __name__ == '__main__':
-    tstart = time.time()
     Bid_Result_Detail_Page_Crawling()
-    print("총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간

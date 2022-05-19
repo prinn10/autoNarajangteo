@@ -27,7 +27,7 @@ import tools
 import Bid_Announcement_Detail_Page
 import Bid_Result_Detail_Page
 import Bid_Result_List_Page
-
+import Preliminary_Pricing_Results_Page
 # 개찰결과 데이터셋 수집 프로그램
 
 # driver init
@@ -109,6 +109,8 @@ def ListCrawling():
 
             # 개찰완료 페이지 크롤링
             Bid_Result_Detail_Page.Bid_Result_Detail_Page_Crawling()
+            Preliminary_Pricing_Results_Page.Preliminary_Pricing_Results_Page_Crawling()
+            driver = tools.driverInit(driver)
 
             # 공고상세로 이동
             driver.find_element(By.CLASS_NAME, 'btn_mdl').click()
