@@ -80,6 +80,7 @@ def Bid_Result_Detail_Page_Crawling():
     bid_res_crawling()
     open_bid_rank_crawling()
     print("Bid_Result_Detail_Page_Crawling 총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
+    return time.time() - tstart
 
 if __name__ == '__main__':
     Bid_Result_Detail_Page_Crawling()

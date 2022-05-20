@@ -46,6 +46,25 @@ driver = tools.driverInit(driver)
 #Move Next Page
 table_element_list = []
 
+#Monitoring
+Bid_Announcement_Detail_Page_Crawling_Processing_Time = 0
+Bid_Announcement_Detail_Page_Crawling_Count = 0
+Bid_Result_Detail_Page_Crawling_Processing_Time = 0
+Bid_Result_Detail_Page_Crawling_Count = 0
+Preliminary_Pricing_Results_Page_Crawling_Processing_Time = 0
+Preliminary_Pricing_Results_Page_Crawling_Count = 0
+ListCrawling_Processing_Time = 0
+ListCrawling_Crawling_Count = 0
+Total_Processing_Time = 0
+Total_Count = 0
+
+def Monitoring():
+    print('bid ann','average processing time',Bid_Announcement_Detail_Page_Crawling_Processing_Time/Bid_Announcement_Detail_Page_Crawling_Count,'count',Bid_Announcement_Detail_Page_Crawling_Count)
+    print('bid res','average processing time',Bid_Result_Detail_Page_Crawling_Processing_Time/Bid_Result_Detail_Page_Crawling_Count,'count',Bid_Result_Detail_Page_Crawling_Count)
+    print('pre price','average processing time',Preliminary_Pricing_Results_Page_Crawling_Processing_Time/Preliminary_Pricing_Results_Page_Crawling_Count,'count',Preliminary_Pricing_Results_Page_Crawling_Count)
+    print('list crawling','average processing time',ListCrawling_Processing_Time/ListCrawling_Crawling_Count,'count',ListCrawling_Crawling_Count)
+    print('Total crawling','average processing time',Total_Processing_Time/Total_Count,'count',Total_Count)
+
 def move_next_page():
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
@@ -56,11 +75,23 @@ def move_next_page():
     driver.find_element(By.XPATH, '/html/body/div/div[2]/div[3]/a').click()
     # 현재 페이지 출력
     # 마지막 페이지인지 확인 여부 출력
-    pass
+    print('다음페이지 이동')
 
 # 개찰결과 목록 리스트 정보 수집
 def ListCrawling():
+    global Bid_Announcement_Detail_Page_Crawling_Processing_Time
+    global Bid_Announcement_Detail_Page_Crawling_Count
+    global Bid_Result_Detail_Page_Crawling_Processing_Time
+    global Bid_Result_Detail_Page_Crawling_Count
+    global Preliminary_Pricing_Results_Page_Crawling_Processing_Time
+    global Preliminary_Pricing_Results_Page_Crawling_Count
+    global ListCrawling_Processing_Time
+    global ListCrawling_Crawling_Count
+    global Total_Processing_Time
+    global Total_Count
+
     readstart = time.time()
+    teadstart = time.time()
     chrome_options = Options()
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
@@ -83,6 +114,9 @@ def ListCrawling():
     #print(tb1info.items())
     list_len = len(tb1info['업무'])
     print("list",list_len, '읽어들인 시간 :', time.time() - readstart)  # 현재시각 - 시작시간 = 실행 시간
+    ListCrawling_Processing_Time += time.time() - readstart
+    ListCrawling_Crawling_Count += 1
+
     u_len = 0 # 유찰 개수
     nu_len = 0 # 개찰완료, 재입찰 개수
 
@@ -101,29 +135,40 @@ def ListCrawling():
             print('skip 재입찰')
             u_len += 1
             continue
-        # 진행상황 == '개찰완료' or '재입찰'
+        elif tb1info[tb1_keys[-1]][i] == '상세조회': # 진행상황 == 유찰
+            print('skip 상세조회')
+            u_len += 1
+            continue
+        # 진행상황 == '개찰완료'
         else:
             nu_len += 1
             driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/table/tbody/tr['+str(i+1)+']/td[11]/div/a').click() # 해당 행이 개찰완료이면 개찰완료 버튼 클릭
             sleep(2) # 속도 수정
 
             # 개찰완료 페이지 크롤링
-            Bid_Result_Detail_Page.Bid_Result_Detail_Page_Crawling()
-            Preliminary_Pricing_Results_Page.Preliminary_Pricing_Results_Page_Crawling()
+            Bid_Result_Detail_Page_Crawling_Processing_Time += Bid_Result_Detail_Page.Bid_Result_Detail_Page_Crawling()
+            Bid_Result_Detail_Page_Crawling_Count += 1
+            Preliminary_Pricing_Results_Page_Crawling_Processing_Time += Preliminary_Pricing_Results_Page.Preliminary_Pricing_Results_Page_Crawling()
+            Preliminary_Pricing_Results_Page_Crawling_Count += 1
             driver = tools.driverInit(driver)
 
             # 공고상세로 이동
             driver.find_element(By.CLASS_NAME, 'btn_mdl').click()
             sleep(1)
-            Bid_Announcement_Detail_Page.Bid_Announcement_Detail_Page_Crawling()
+            Bid_Announcement_Detail_Page_Crawling_Processing_Time += Bid_Announcement_Detail_Page.Bid_Announcement_Detail_Page_Crawling()
+            Bid_Announcement_Detail_Page_Crawling_Count += 1
+            Total_Count += 1
 
             driver.back()
 
             sleep(1) # 이부분 속도 수정
             driver.back()
             sleep(1)
+            Total_Processing_Time = time.time() - teadstart
+            Monitoring()
     print('페이지 순회 완료')
     print('해당 페이지 리스트 개수', list_len, '중 유찰 개수', u_len, '개찰완료or재입찰 개수', nu_len, '입니다')
+
     pass
 
 # 입찰결과 목록 정보 수집

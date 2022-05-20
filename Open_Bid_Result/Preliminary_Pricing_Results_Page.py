@@ -103,6 +103,6 @@ def Preliminary_Pricing_Results_Page_Crawling():
     table_element_list = search_table_xpath(table_element_list, info_tables)
     Preliminary_Pricing_Results_Crawling(table_names, table_element_list, info_tables)
     print("Preliminary_Pricing_Results_Page_Crawling 총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
-
+    return time.time() - tstart
 if __name__ == '__main__':
     Preliminary_Pricing_Results_Page_Crawling()
