@@ -52,10 +52,14 @@ def announcement_detail_crawling(table_names, table_element_list, info_tables, p
     # 2. 첨부파일 규격서 정보 수집
     # 2.1. 공고서 탐색 및 다운로드
     try:
-        i = tb_info[5]['문서구분'].index('공고서')
+        index = -1
+        for i in range(len(tb_info[5]['문서구분'])):
+            if tb_info[5]['문서구분'][i] == '공고서' and tb_info[5]['파일명'][i].find('hwp') != -1:
+                index = i
+                break
         tbody = table_element_list['첨부 파일'][0].find_element(By.TAG_NAME, "tbody")
         rows = tbody.find_elements(By.TAG_NAME, "tr")
-        rows[i].find_elements(By.TAG_NAME,"td")[2].find_element(By.TAG_NAME,"a").click()
+        rows[index].find_elements(By.TAG_NAME,"td")[2].find_element(By.TAG_NAME,"a").click()
 
         # 2.2. 공고서 정보 수집
         download_path = 'C:\\Users\\정희운\\Downloads'
