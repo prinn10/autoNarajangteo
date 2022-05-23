@@ -50,6 +50,8 @@ class main:
                 body=value.find_elements(By.TAG_NAME,"td")[j]
                 tb1info[tb1_keys[j]].append(body.text)
 
+        tools.writeTb5(tb1info, 'lis_cra')
+
         self.monitoring.update('lis_cra', time.time() - readstart, print_type='updated_element')
         # 목록 순환 소스
         for i in range(len(tb1info['업무'])):
@@ -64,12 +66,12 @@ class main:
                 self.driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/table/tbody/tr['+str(i+1)+']/td[11]/div/a').click() # 해당 행이 개찰완료이면 개찰완료 버튼 클릭
                 sleep(2)
 
-                Bid_Result_Detail_Page.Bid_Result_Detail_Page_Crawling(self.driver) # 물품 개찰결과 상세조회 페이지 크롤링
-                Preliminary_Pricing_Results_Page.Preliminary_Pricing_Results_Page_Crawling(self.driver) # 예비가격 산정결과 페이지 크롤링
+                Bid_Result_Detail_Page.Bid_Result_Detail_Page_Crawling(self.driver, tb1info['입찰공고번호'][i]) # 물품 개찰결과 상세조회 페이지 크롤링
+                Preliminary_Pricing_Results_Page.Preliminary_Pricing_Results_Page_Crawling(self.driver, tb1info['입찰공고번호'][i]) # 예비가격 산정결과 페이지 크롤링
                 self.driver = tools.driverInit(self.driver)
                 self.driver.find_element(By.CLASS_NAME, 'btn_mdl').click() # 공고상세 페이지로 이동
                 sleep(1)
-                Bid_Announcement_Detail_Page.Bid_Announcement_Detail_Page_Crawling(self.driver) # 공고상세 페이지 크롤링
+                Bid_Announcement_Detail_Page.Bid_Announcement_Detail_Page_Crawling(self.driver, tb1info['입찰공고번호'][i]) # 공고상세 페이지 크롤링
 
                 self.driver.back()
                 sleep(1) # 이부분 속도 수정
@@ -77,6 +79,7 @@ class main:
                 sleep(1)
 
                 self.monitoring.update('tot_cou', time.time() - readstart, print_type='all_element')
+
         print('페이지 순회 완료')
         print('해당 페이지 리스트 개수', len(tb1info['업무']), '중 개찰완료 개수', self.nu_len)
 

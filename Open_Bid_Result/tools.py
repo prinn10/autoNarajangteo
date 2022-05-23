@@ -88,11 +88,11 @@ def advanced_table1_info_read(table_element, table_keys): # 나라장터 테이�
     tbody = table_element.find_element(By.TAG_NAME, "tbody")
     rows = tbody.find_elements(By.TAG_NAME, "tr")
     for i, value in enumerate(rows):
-        for j in range(len(table_keys)):
+        for j in range(1, len(table_keys)):
             if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.' or value.find_element(By.TAG_NAME,"td").text == '자료없음' or value.find_element(By.TAG_NAME,"td").text == '첨부된 파일이 없습니다.': # 데이터가 없을 경우
                 tb1info[table_keys[j]].append('')
             else: # 데이터가 있을 경우
-                body=value.find_elements(By.TAG_NAME,"td")[j]
+                body=value.find_elements(By.TAG_NAME,"td")[j-1]
                 tb1info[table_keys[j]].append(body.text)
 
     return tb1info
@@ -156,6 +156,32 @@ def extract_number(num_str): # num_str 문자열에서 숫자반 추출하여 �
         return numbers
     else:
         return None
+
+def insert_value(tb_info, table_name, pri_value=None, save_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset'):
+    # tb의 요소 중 가장 긴 길이를 추출
+    tb_lenth = 0
+    for key in tb_info.keys():
+        if tb_lenth < len(tb_info[key]):
+            tb_lenth = len(tb_info[key])
+
+    # 결측치를 모두 ''로 채우고 모든 배열들의 길이를 동일하게 맞춤
+    for key in tb_info.keys():
+        while len(tb_info[key]) != tb_lenth:
+            tb_info[key].append('')
+
+    if pri_value != None: # pri_value 값 추가
+        # pri_value가 존재하는 경우
+        if '입찰공고번호' in tb_info.keys():
+            tb_info['입찰공고번호'].clear()
+        else: # 존재하지 않는 경우
+            tb_info['입찰공고번호'] = []
+
+        while len(tb_info['입찰공고번호']) != tb_lenth:
+            tb_info['입찰공고번호'].append(pri_value)
+
+    db = pd.DataFrame(tb_info, columns=tb_info.keys())
+    db.to_csv(os.path.join(save_path, table_name+'.csv'), mode='a', header=False, index=True, encoding='utf-8-sig')
+
 
 if __name__ == '__main__':
     num = extract_number('대상으로 예정가격 이하로서 예정가격 대비  80.1243%이상 최저가 입찰자 순으로 <조달청 물품구매 적격심사 세부기준>에 따라 평가하여 종합평점이  이상인 자를 낙찰자로 결정')

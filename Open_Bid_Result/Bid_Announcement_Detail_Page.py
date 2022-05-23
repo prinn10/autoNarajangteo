@@ -28,7 +28,7 @@ def Init():
     info_tables['공고일반'].append(['공고종류', '게시일시', '입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관','검사','검수','입찰방식','낙찰방법','계약방법','국제입찰구분','재입찰','채권자명','발주계획통합번호','사전규격등록번호','사전규격 미공개사유','국내/국제 입찰사유','WTO수의계약사유','입찰자격','관련공고'])
     info_tables['입찰집행 및 진행 정보'].append(['입찰개시일시', '입찰마감일시', '개찰(입찰)일시', '물품등록구분', '개찰(입찰)일시','개찰장소','입찰참가자격등록\n마감일시','보증서접수마감일시','실적심사신청서','실적심사신청서\n신청기한','공동수급협정서\n접수여부','동가입찰 낙찰자\n자동추첨프로그램','공동수급협정서\n마감일시','연구개발물품여부'])
     info_tables['예정가격 결정 및 입찰금액 정보'].append(['예가방법', '추첨번호공개여부', '사업금액\n(추정가격 + 부가세)', '추정가격', '배정예산'])
-    # info_tables['투찰제한 - 일반'].append(['지역제한', '참가가능지역', '지사투찰허용여부', '업종제한','업종사항제한', '물품분류제한여부', '물품등록구분', '공동수급체 구성원 지역제한적용여부'])
+    # info_tables['투찰제한 - 일반'].append(['입찰공고번호', '지역제한', '참가가능지역', '지사투찰허용여부', '업종제한','업종사항제한', '물품분류제한여부', '물품등록구분', '공동수급체 구성원 지역제한적용여부'])
     info_tables['가용금액공개'].append(['입찰분류', '가용금액'])
     info_tables['기초금액 공개'].append(['분류', '기초금액','비고','상세보기'])
     # info_tables['구매대상물품'].append(['분류', '수요기관', '세부품명', '납품장소'])
@@ -38,7 +38,7 @@ def Init():
 
     return table_names, table_element_list, info_tables
 
-def announcement_detail_crawling(table_names, table_element_list, info_tables): # 물품 입찰 공고 상세 페이지 크롤링 함수, 함수 이름 바꿔야댐
+def announcement_detail_crawling(table_names, table_element_list, info_tables, pri_value): # 물품 입찰 공고 상세 페이지 크롤링 함수, 함수 이름 바꿔야댐
     # 1. 물품 입찰공고 상세 페이지 table 정보 수집
     tb_info = []
     for i, table_name in enumerate(table_names):
@@ -60,9 +60,9 @@ def announcement_detail_crawling(table_names, table_element_list, info_tables): 
         # 2.2. 공고서 정보 수집
         download_path = 'C:\\Users\\정희운\\Downloads'
         tools.waitFileDownload(download_path)
-        sleep(2)
+        sleep(3)
         file_name = os.listdir(download_path)
-        findWord = ['±', '낙찰하한율', '예정가격']
+        findWord = ['±', '낙찰 하한율', '낙찰하한율', '예정가격']
         range, min_value = readHWP.announcement_doc_crawling(os.path.join(download_path, file_name[0]), findWord) # 범위, 낙찰하한율 반환
         os.remove(os.path.join(download_path, file_name[0]))  # 확인 후 해당 파일 삭제
         tb_info.append({'±': [range], '낙찰하한율': [min_value]})
@@ -70,16 +70,9 @@ def announcement_detail_crawling(table_names, table_element_list, info_tables): 
     except:
         print('공고서 없음')
 
-    # 3. DB 저장
-    # 3.1 tb 결측치 채우기
-    for tb in tb_info:
-        for key in tb.keys():
-            if tb[key] == []:
-                tb[key].append('')
-
     # 3.2 csv write
     for i, tb in enumerate(tb_info):
-        tools.writeTb5(tb, 'bid_detail'+str(i+1))
+        tools.insert_value(tb, 'bid_detail'+str(i+1), pri_value)
 
 
 # def rnaoeotkd(): # # 7. 구매대상물품
@@ -133,12 +126,12 @@ def search_table_xpath(driver, table_element_list, info_tables): # table element
 
     return table_element_list
 
-def Bid_Announcement_Detail_Page_Crawling(driver):
+def Bid_Announcement_Detail_Page_Crawling(driver, pri_value):
     tstart = time.time()
     monitoring = Monitoring.monitoring()
     table_names, table_element_list, info_tables = Init()
     table_element_list = search_table_xpath(driver, table_element_list, info_tables)
-    announcement_detail_crawling(table_names, table_element_list, info_tables)
+    announcement_detail_crawling(table_names, table_element_list, info_tables, pri_value)
     monitoring.update('bid_ann', time.time() - tstart, print_type='updated_element')
 
 if __name__ == '__main__':
