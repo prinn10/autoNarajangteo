@@ -135,4 +135,9 @@ def Bid_Announcement_Detail_Page_Crawling(driver, pri_value):
     monitoring.update('bid_ann', time.time() - tstart, print_type='updated_element')
 
 if __name__ == '__main__':
-    Bid_Announcement_Detail_Page_Crawling()
+    chrome_options = Options()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    driver = webdriver.Chrome(executable_path='chromedriver',
+                                   options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+    driver = tools.driverInit(driver)
+    Bid_Announcement_Detail_Page_Crawling(driver, '1234')
