@@ -14,35 +14,16 @@ from time import sleep
 
 import tools
 import readHWP
-
-chrome_options = Options()
-chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
-driver = tools.driverInit(driver)
-
+import Monitoring
 
 # 물품개찰결과상세조회 페이지
-def bid_res_crawling(): # 입찰결과 테이블 크롤링 함수
+def bid_res_crawling(driver): # 입찰결과 테이블 크롤링 함수
     # 1. 입찰결과 테이블 키 값 리스트 정의
     bid_res_keys = ['입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관', '실제개찰일시', '복수예비가 및\n예정가격', '적격심사결과', '동일가격추첨결과', '유의사항']
-
     sleep(2)
-    table = driver.find_element(By.XPATH, '/html/body/div/div[2]/form[1]/div[2]/table')
-    tbody = table.find_element(By.TAG_NAME, "tbody")
-    tb2info = tools.initListDict(bid_res_keys)
-    for tr in tbody.find_elements(By.TAG_NAME, "tr"):
-        th_list = []
-        for th in tr.find_elements(By.TAG_NAME, "th"):
-            th_list.append(th.get_attribute("innerText"))
-        td_list = []
-        for td in tr.find_elements(By.TAG_NAME, "td"):
-            td_list.append(td.get_attribute("innerText"))
-        for i in range(len(th_list)):
-            tb2info[th_list[i]].append(td_list[i])
-
-    for key in tb2info.keys():
-        if tb2info[key] == []:
-            tb2info[key].append('')
+    table = []
+    table.append(driver.find_element(By.XPATH, '/html/body/div/div[2]/form[1]/div[2]/table'))
+    tb2info = tools.adadvanced_table_info_read(table, bid_res_keys)
 
     # 테이블 정보 출력
     print(bid_res_keys)
@@ -53,20 +34,12 @@ def bid_res_crawling(): # 입찰결과 테이블 크롤링 함수
         print()
 
 
-def open_bid_rank_crawling(): # 개찰결과순위 테이블 크롤링 함수
+def open_bid_rank_crawling(driver): # 개찰결과순위 테이블 크롤링 함수
     # 1. 개찰순위 테이블 키 값 리스트 정의
     open_bid_keys = ['순위', '사업자등록번호', '업체명', '대표자', '투찰금액', '투찰률(%)', '추첨번호', '투찰일시', '비고']
-
-    tb1info = tools.initListDict(open_bid_keys)
-
-    table = driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/table')
-    tbody = table.find_element(By.TAG_NAME, "tbody")
-    rows = tbody.find_elements(By.TAG_NAME, "tr")
-    for i, value in enumerate(rows):
-        for j in range(len(open_bid_keys)):
-            body=value.find_elements(By.TAG_NAME,"td")[j]
-            # print(body.text) # debug
-            tb1info[open_bid_keys[j]].append(body.text)
+    table = []
+    table.append(driver.find_element(By.XPATH, '/html/body/div/div[2]/div[2]/table'))
+    tb1info = tools.adadvanced_table_info_read(table, open_bid_keys)
 
     # 테이블 정보 출력
     print(open_bid_keys)
@@ -75,12 +48,12 @@ def open_bid_rank_crawling(): # 개찰결과순위 테이블 크롤링 함수
             print(tb1info[key][i], end=' ')
         print()
 
-def Bid_Result_Detail_Page_Crawling():
+def Bid_Result_Detail_Page_Crawling(driver):
     tstart = time.time()
-    bid_res_crawling()
-    open_bid_rank_crawling()
-    print("Bid_Result_Detail_Page_Crawling 총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
-    return time.time() - tstart
+    monitoring = Monitoring.monitoring()
+    bid_res_crawling(driver)
+    open_bid_rank_crawling(driver)
+    monitoring.update('bid_res', time.time() - tstart, print_type='updated_element')
 
 if __name__ == '__main__':
     Bid_Result_Detail_Page_Crawling()

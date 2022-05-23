@@ -14,13 +14,9 @@ from time import sleep
 
 import tools
 import readHWP
+import Monitoring
 
 def Init():
-    # chrome_options = Options()
-    # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    # driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
-    # driver = tools.driverInit(driver)
-
     ## table names
     table_names = ['공고일반', '입찰집행 및 진행 정보', '예정가격 결정 및 입찰금액 정보', '가용금액공개', '기초금액 공개', '첨부 파일', '입찰진행현황']
 
@@ -119,12 +115,7 @@ def announcement_detail_crawling(table_names, table_element_list, info_tables): 
 #     return range, min_value
 #
 
-def search_table_xpath(table_element_list, info_tables): # table elements 탐색
-    chrome_options = Options()
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
-    driver = tools.driverInit(driver)
-
+def search_table_xpath(driver, table_element_list, info_tables): # table elements 탐색
     tables_xpath = driver.find_elements(By.TAG_NAME, 'table')  # 리스트 타입의 테이블을 읽어들임
     for table_names in info_tables.keys():
         if table_names == '구매대상물품':
@@ -136,19 +127,19 @@ def search_table_xpath(table_element_list, info_tables): # table elements 탐색
             if table_xpath.get_attribute("summary").find(table_names[0:3]) != -1:
                 table_element_list[table_names].append(table_xpath)
 
-
     for key, val in table_element_list.items():
         print('---------------------',key)
         print(val)
 
     return table_element_list
 
-def Bid_Announcement_Detail_Page_Crawling():
+def Bid_Announcement_Detail_Page_Crawling(driver):
     tstart = time.time()
+    monitoring = Monitoring.monitoring()
     table_names, table_element_list, info_tables = Init()
-    table_element_list = search_table_xpath(table_element_list, info_tables)
+    table_element_list = search_table_xpath(driver, table_element_list, info_tables)
     announcement_detail_crawling(table_names, table_element_list, info_tables)
-    print("Bid_Announcement_Detail_Page_Crawling 총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
-    return time.time() - tstart
+    monitoring.update('bid_ann', time.time() - tstart, print_type='updated_element')
+
 if __name__ == '__main__':
     Bid_Announcement_Detail_Page_Crawling()

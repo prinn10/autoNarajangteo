@@ -15,15 +15,11 @@ from time import sleep
 
 import tools
 import readHWP
+import Monitoring
 
-def page_open(): # 예비가격 산정결과 페이지 열기
-    chrome_options = Options()
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
-    driver = tools.driverInit(driver)
-
+def page_open(driver): # 예비가격 산정결과 페이지 열기
     driver.find_element(By.XPATH, '/html/body/div/div[2]/form[1]/div[2]/table/tbody/tr[5]/td[2]/div/a').click()
-    pass
+    sleep(2)
 
 def Init(): # 각종 요소 초기화
     ## table names
@@ -40,14 +36,8 @@ def Init(): # 각종 요소 초기화
 
     return table_names, table_element_list, info_tables
 
-def search_table_xpath(table_element_list, info_tables): # table elements 탐색
-    chrome_options = Options()
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
-
-    print(driver.window_handles)
-    driver.switch_to.window(driver.window_handles[0])  # 최근 열린 탭으로 전환
-
+def search_table_xpath(driver, table_element_list, info_tables): # table elements 탐색
+    driver.switch_to.window(driver.window_handles[-1])  # 최근 열린 탭으로 전환
     tables_xpath = driver.find_elements(By.TAG_NAME, 'table')  # 리스트 타입의 테이블을 읽어들임
 
     print(len(tables_xpath))
@@ -66,13 +56,9 @@ def search_table_xpath(table_element_list, info_tables): # table elements 탐색
     return table_element_list
 
 
-def Preliminary_Pricing_Results_Crawling(table_names, table_element_list, info_tables): # 해당 페이지 정보 크롤링
-    chrome_options = Options()
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
-
+def Preliminary_Pricing_Results_Crawling(driver, table_names, table_element_list, info_tables): # 해당 페이지 정보 크롤링
     print(driver.window_handles)
-    driver.switch_to.window(driver.window_handles[0]) # 최근 열린 탭으로 전환
+    driver.switch_to.window(driver.window_handles[-1]) # 최근 열린 탭으로 전환
 
     tb_info = []
     for i, table_name in enumerate(table_names):
@@ -92,17 +78,19 @@ def Preliminary_Pricing_Results_Crawling(table_names, table_element_list, info_t
     print('기초금액기준 상위개수 : ', num)
 
     driver.close()
+    driver.switch_to.window(driver.window_handles[-1])
 
     return num
 
 
-def Preliminary_Pricing_Results_Page_Crawling():
+def Preliminary_Pricing_Results_Page_Crawling(driver):
     tstart = time.time()
-    page_open()
+    monitoring = Monitoring.monitoring()
+    page_open(driver)
     table_names, table_element_list, info_tables = Init()
-    table_element_list = search_table_xpath(table_element_list, info_tables)
-    Preliminary_Pricing_Results_Crawling(table_names, table_element_list, info_tables)
-    print("Preliminary_Pricing_Results_Page_Crawling 총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
-    return time.time() - tstart
+    table_element_list = search_table_xpath(driver, table_element_list, info_tables)
+    Preliminary_Pricing_Results_Crawling(driver, table_names, table_element_list, info_tables)
+    monitoring.update('pre_pri', time.time() - tstart, print_type='updated_element')
+
 if __name__ == '__main__':
     Preliminary_Pricing_Results_Page_Crawling()
