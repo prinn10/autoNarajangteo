@@ -51,12 +51,13 @@ def announcement_detail_crawling(table_names, table_element_list, info_tables, p
 
     # 2. 첨부파일 규격서 정보 수집
     # 2.1. 공고서 탐색 및 다운로드
-    try:
-        index = -1
-        for i in range(len(tb_info[5]['문서구분'])):
-            if tb_info[5]['문서구분'][i] == '공고서' and tb_info[5]['파일명'][i].find('hwp') != -1:
-                index = i
-                break
+
+    index = -1
+    for i in range(len(tb_info[5]['문서구분'])):
+        if tb_info[5]['문서구분'][i] == '공고서' and tb_info[table_names.index('첨부 파일')]['파일명'][i].find('hwp') != -1:
+            index = i
+            break
+    if index != -1:
         tbody = table_element_list['첨부 파일'][0].find_element(By.TAG_NAME, "tbody")
         rows = tbody.find_elements(By.TAG_NAME, "tr")
         rows[index].find_elements(By.TAG_NAME,"td")[2].find_element(By.TAG_NAME,"a").click()
@@ -64,14 +65,13 @@ def announcement_detail_crawling(table_names, table_element_list, info_tables, p
         # 2.2. 공고서 정보 수집
         download_path = 'C:\\Users\\정희운\\Downloads'
         tools.waitFileDownload(download_path)
-        sleep(3)
+        sleep(0.3)
         file_name = os.listdir(download_path)
         findWord = ['±', '낙찰 하한율', '낙찰하한율', '예정가격']
-        range, min_value = readHWP.announcement_doc_crawling(os.path.join(download_path, file_name[0]), findWord) # 범위, 낙찰하한율 반환
-        os.remove(os.path.join(download_path, file_name[0]))  # 확인 후 해당 파일 삭제
-        tb_info.append({'±': [range], '낙찰하한율': [min_value]})
+        plmi, min_value = readHWP.announcement_doc_crawling(os.path.join(download_path, file_name[0]), findWord) # 범위, 낙찰하한율 반환
+        tb_info.append({'±': [plmi], '낙찰하한율': [min_value]})
         print(tb_info[7])
-    except:
+    else:
         print('공고서 없음')
 
     # 3.2 csv write

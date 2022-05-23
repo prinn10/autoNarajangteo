@@ -101,10 +101,12 @@ def announcement_doc_crawling(file_path, findWord = None):
                                 break
 
     print('res ', range, min_value)
-
-
-
     hwp.Quit()
+    sleep(1)
+    if min_value == '':
+        tools.move_file(file_path)
+    else:
+        os.remove(file_path)  # 확인 후 해당 파일 삭제
     return range, min_value
 
 if __name__ == '__main__':

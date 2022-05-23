@@ -10,6 +10,8 @@ from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 import zipfile
+from pathlib import Path
+import shutil
 
 def writeTb1(tbinfo): # 크롤링 데이터 메타정보 저장함수
     db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
@@ -42,7 +44,7 @@ def waitFileDownload(download_path):
         file_list = os.listdir(download_path)
         all_check = False
         for file in file_list:
-            if str(file).find('crdownload') != -1:
+            if str(file).find('crdownload') != -1 or str(file).find('.tmp') != -1:
                 sleep(0.3)
                 print('다운로드 대기 중...')
                 all_check = True
@@ -182,7 +184,17 @@ def insert_value(tb_info, table_name, pri_value=None, save_path='C:\\pycharm\\so
     db = pd.DataFrame(tb_info, columns=tb_info.keys())
     db.to_csv(os.path.join(save_path, table_name+'.csv'), mode='a', header=False, index=True, encoding='utf-8-sig')
 
+def move_file(src_file_path, download_path = None, dst_dir_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\debug'):
+    if download_path == None:
+        shutil.move(src_file_path, dst_dir_path)
+    else:
+        try:
+            shutil.move(os.path.join(download_path, src_file_path),dst_dir_path)
+        except:
+            os.remove(src_file_path)
 
 if __name__ == '__main__':
-    num = extract_number('대상으로 예정가격 이하로서 예정가격 대비  80.1243%이상 최저가 입찰자 순으로 <조달청 물품구매 적격심사 세부기준>에 따라 평가하여 종합평점이  이상인 자를 낙찰자로 결정')
-    print(num)
+    # num = extract_number('대상으로 예정가격 이하로서 예정가격 대비  80.1243%이상 최저가 입찰자 순으로 <조달청 물품구매 적격심사 세부기준>에 따라 평가하여 종합평점이  이상인 자를 낙찰자로 결정')
+    # print(num)
+
+    waitFileDownload('C:\\Users\\정희운\\Downloads')

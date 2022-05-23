@@ -45,25 +45,15 @@ def open_bid_rank_crawling(driver, pri_value): # 개찰결과순위 테이블 �
     table.append(driver.find_element(By.XPATH, '/html/body/div/div[2]/div[2]/table'))
     tb1info = tools.adadvanced_table_info_read(table, open_bid_keys)
 
-    # 테이블 정보 출력
-    print(open_bid_keys)
-    for i in range(len(tb1info[open_bid_keys[0]])):
-        for key in open_bid_keys:
-            print(tb1info[key][i], end=' ')
-        print()
-    tools.writeTb5(tb1info, 'bid_res')
-
-    # 3. DB 저장
-    # 3.1 tb 결측치 채우기
-    for key in tb1info.keys():
-        if key == '입찰공고번호':
-            tb1info[key].clear()
-            tb1info[key].append(pri_value)
-        if tb1info[key] == []:
-            tb1info[key].append('')
+    # # 테이블 정보 출력
+    # print(open_bid_keys)
+    # for i in range(len(tb1info[open_bid_keys[0]])):
+    #     for key in open_bid_keys:
+    #         print(tb1info[key][i], end=' ')
+    #     print()
 
     # 3.2 csv write
-    tools.insert_value(tb1info, '입찰결과', pri_value)
+    tools.insert_value(tb1info, '개찰순위', pri_value)
 
 
 def Bid_Result_Detail_Page_Crawling(driver, pri_value):

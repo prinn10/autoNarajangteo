@@ -33,6 +33,7 @@ class main:
     def move_next_page(self):
         self.driver.find_element(By.XPATH, '/html/body/div/div[2]/div[3]/a').click()
         print('다음페이지 이동')
+        sleep(3)
 
     # 개찰결과 목록 리스트 정보 수집
     def ListCrawling(self):
