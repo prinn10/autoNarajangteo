@@ -105,6 +105,7 @@ def announcement_doc_crawling(file_path, findWord = None):
         hwp.Quit()
         sleep(1)
         if min_value == '':
+            print('낙찰하한율이 존재하지 않습니다. 파일을 이동합니다')
             tools.move_file(file_path)
         else:
             os.remove(file_path)  # 확인 후 해당 파일 삭제

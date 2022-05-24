@@ -32,10 +32,11 @@ class main:
 
     def move_next_page(self):
         sleep(1)
+        self.driver = tools.driverInit(self.driver)
         div = self.driver.find_element(By.XPATH, '/html/body/div/div[2]/div[3]')
-        a_list = div.find_elements(By.TAG_NAME, 'a')[-1].click()
         cur_page = div.find_element(By.TAG_NAME, 'strong')
         print('현재 페이지', cur_page.get_attribute("innerText"), '다음페이지 이동')
+        div.find_elements(By.TAG_NAME, 'a')[-1].click()
         sleep(1)
 
     # 개찰결과 목록 리스트 정보 수집
@@ -63,9 +64,9 @@ class main:
 
             if tb1info[tb1_keys[-1]][i] == '유찰' or tb1info[tb1_keys[-1]][i] == '재입찰' or tb1info[tb1_keys[-1]][i] == '상세조회': # 진행상황 == 유찰
                 print('skip 유찰, 재입찰, 상세조회')
-                continue
 
             else:# 진행상황 == '개찰완료'
+                toustart = time.time()
                 self.nu_len += 1
                 self.driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/table/tbody/tr['+str(i+1)+']/td[11]/div/a').click() # 해당 행이 개찰완료이면 개찰완료 버튼 클릭
                 sleep(2)
@@ -82,7 +83,7 @@ class main:
                 self.driver.back()
                 sleep(1)
 
-                self.monitoring.update('tot_cou', time.time() - readstart, print_type='all_element')
+                self.monitoring.update('tot_cou', time.time() - toustart, print_type='all_element')
 
         print('페이지 순회 완료')
         print('해당 페이지 리스트 개수', len(tb1info['업무']), '중 개찰완료 개수', self.nu_len)

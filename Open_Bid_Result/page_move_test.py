@@ -26,6 +26,18 @@ from datetime import datetime, timedelta
 start_date = '20180108'
 end_date = '20220108'
 
+def calculate_date(date, num):
+    year = int(date[0:4])
+    month = int(date[5:7])
+    day = int(date[8:10])
+    print(year, month, day)
+    now = datetime(year, month, day)
+    now = now - timedelta(days = num)
+
+    strnow = str(now)[0:10]
+    print(strnow)
+    return strnow[0:4]+'/'+strnow[5:7]+'/'+strnow[8:10]
+
 def save_resume_info(): # 크롤링 완료된 기간 정보 저장
     pass
 
@@ -89,29 +101,25 @@ def test(driver):
 def total_process(driver):
     #모든 월별 페이지를 순환
 
+    # 1. 날짜 초기화
+    date = 0
     while True:
         # 1. 날짜 선택 및 검색
+        element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "sub")))
         # 2. 한 페이지의 리스트를 순회
-            # 물품입찰공고상세
-            # 물품개찰결과상세
-            # 예비가격 산정결과
+        element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "sub")))
+            # 물품입찰공고상세 이동
+            element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "sub")))
+            # 물품개찰결과상세 이동
+            element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "sub")))
+            # 예비가격 산정결과 이동
+            element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "sub")))
         # 모든 페이지 리스트 순회 끝
 
         # 3. 날짜 선택창으로 이동
         # 4. 날짜 변경 후 1.로 돌아감
+        date = calculate_date(date, 1)
 
-
-def calculate_date(date, num):
-    year = int(date[0:4])
-    month = int(date[5:7])
-    day = int(date[8:10])
-    print(year, month, day)
-    now = datetime(year, month, day)
-    now = now - timedelta(days = num)
-
-    strnow = str(now)[0:10]
-    print(strnow)
-    return strnow[0:4]+'/'+strnow[5:7]+'/'+strnow[8:10]
 
 if __name__ == '__main__':
     chrome_options = Options()
