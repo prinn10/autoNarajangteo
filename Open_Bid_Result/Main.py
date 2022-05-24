@@ -31,9 +31,12 @@ class main:
         self.monitoring = Monitoring.monitoring()
 
     def move_next_page(self):
-        self.driver.find_element(By.XPATH, '/html/body/div/div[2]/div[3]/a').click()
-        print('다음페이지 이동')
-        sleep(3)
+        sleep(1)
+        div = self.driver.find_element(By.XPATH, '/html/body/div/div[2]/div[3]')
+        a_list = div.find_elements(By.TAG_NAME, 'a')[-1].click()
+        cur_page = div.find_element(By.TAG_NAME, 'strong')
+        print('현재 페이지', cur_page.get_attribute("innerText"), '다음페이지 이동')
+        sleep(1)
 
     # 개찰결과 목록 리스트 정보 수집
     def ListCrawling(self):

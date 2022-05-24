@@ -42,6 +42,10 @@ def initListDict(keys):
 def waitFileDownload(download_path):
     while True:
         file_list = os.listdir(download_path)
+        if len(file_list) == 0:
+            print('다운로드된 파일이 없음...')
+            sleep(0.3).  스킵
+            break
         all_check = False
         for file in file_list:
             if str(file).find('crdownload') != -1 or str(file).find('.tmp') != -1:
@@ -91,56 +95,11 @@ def advanced_table1_info_read(table_element, table_keys): # 나라장터 테이�
     rows = tbody.find_elements(By.TAG_NAME, "tr")
     for i, value in enumerate(rows):
         for j in range(len(table_keys)):
-            if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.' or value.find_element(By.TAG_NAME,"td").text == '자료없음' or value.find_element(By.TAG_NAME,"td").text == '첨부된 파일이 없습니다.': # 데이터가 없을 경우
+            if value.find_element(By.TAG_NAME,"td").text in ['공개된 정보가 없습니다.','자료없음','첨부된 파일이 없습니다.']: # 데이터가 없을 경우
                 tb1info[table_keys[j]].append('')
             else: # 데이터가 있을 경우
                 body=value.find_elements(By.TAG_NAME,"td")[j]
                 tb1info[table_keys[j]].append(body.text)
-
-    return tb1info
-
-# 결측치 초기화 기능 제공
-# table type 1: tr th tr th
-def adadvanced_table_info_read(table_element, table_keys): # 나라장터 테이블 양식을 크롤링하여 dic형태 반환하는 함수
-    tb1info = initListDict(table_keys)
-
-    if table_element != []:
-        tbody = table_element[0].find_element(By.TAG_NAME, "tbody")
-        for tr in tbody.find_elements(By.TAG_NAME, "tr"):
-            th_list = []
-            for th in tr.find_elements(By.TAG_NAME, "th"):
-                th_list.append(th.get_attribute("innerText"))
-
-            td_list = []
-            for td in tr.find_elements(By.TAG_NAME, "td"):
-                td_list.append(td.get_attribute("innerText"))
-            for i in range(len(th_list)):
-                tb1info[th_list[i]].append(td_list[i])
-
-    for key in tb1info.keys():
-        if tb1info[key] == []:
-            tb1info[key].append('')
-
-    return tb1info
-
-# table type 2: list
-def adadvanced_table1_info_read(table_element, table_keys): # 나라장터 테이블 양식을 크롤링하여 dic형태 반환하는 함수
-    tb1info = initListDict(table_keys)
-
-    if table_element != []:
-        tbody = table_element[0].find_element(By.TAG_NAME, "tbody")
-        rows = tbody.find_elements(By.TAG_NAME, "tr")
-        for i, value in enumerate(rows):
-            for j in range(len(table_keys)):
-                if value.find_element(By.TAG_NAME,"td").text == '공개된 정보가 없습니다.' or value.find_element(By.TAG_NAME,"td").text == '자료없음' or value.find_element(By.TAG_NAME,"td").text == '첨부된 파일이 없습니다.': # 데이터가 없을 경우
-                    tb1info[table_keys[j]].append('')
-                else: # 데이터가 있을 경우
-                    body=value.find_elements(By.TAG_NAME,"td")[j]
-                    tb1info[table_keys[j]].append(body.text)
-
-    for key in tb1info.keys():
-        if tb1info[key] == []:
-            tb1info[key].append('')
 
     return tb1info
 
@@ -186,12 +145,15 @@ def insert_value(tb_info, table_name, pri_value=None, save_path='C:\\pycharm\\so
 
 def move_file(src_file_path, download_path = None, dst_dir_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\debug'):
     if download_path == None:
-        shutil.move(src_file_path, dst_dir_path)
+        try:
+            shutil.move(src_file_path,dst_dir_path)
+        except:
+            os.remove(src_file_path)
     else:
         try:
             shutil.move(os.path.join(download_path, src_file_path),dst_dir_path)
         except:
-            os.remove(src_file_path)
+            os.remove(os.path.join(download_path, src_file_path))
 
 if __name__ == '__main__':
     # num = extract_number('대상으로 예정가격 이하로서 예정가격 대비  80.1243%이상 최저가 입찰자 순으로 <조달청 물품구매 적격심사 세부기준>에 따라 평가하여 종합평점이  이상인 자를 낙찰자로 결정')
