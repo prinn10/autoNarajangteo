@@ -36,7 +36,7 @@ def open_bid_rank_crawling(driver, pri_value): # 개찰결과순위 테이블 �
     except: # 본 건이 최종낙찰자가 없을 경우 개찰순위 Table의 XPATH가 바뀜
         table.append(driver.find_element(By.XPATH, '/html/body/div/div[2]/div[5]/table'))
 
-    tb1info = tools.advanced_table1_info_read(table[0], open_bid_keys)
+    tb1info = tools.advanced_table2_info_read(table[0], open_bid_keys)
 
     # 3.2 csv write
     tools.insert_value(tb1info, '개찰순위', pri_value)

@@ -82,9 +82,10 @@ class main:
                 if self.completed_date_check():  # 1.1. 해당 날짜 크롤링 여부를 확인
                     print('해당 날짜는 이미 크롤링 되었으므로 다음 날짜로 넘어갑니다')
                     continue
-
                 # 1.2 날짜 선택 및 검색
                 self.select_date()
+            else:
+                type = 'asd'
             while True:
                 readstart = time.time()
                 # 2. 한 페이지의 리스트를 순회
@@ -172,7 +173,6 @@ class main:
 
             tools.writeTb5({'date': [self.date]}, 'completed_page', save_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset') # 4. 해당 일자는 크롤링 완료됬다고 기록
             print('페이지 순회 완료')
-            print('해당 페이지 리스트 개수', len(tb1info['업무']), '중 개찰완료 개수', self.nu_len)
 
 if __name__ == '__main__':
     tstart = time.time()

@@ -105,6 +105,23 @@ def advanced_table1_info_read(table_element, table_keys): # 나라장터 테이�
 
     return tb1info
 
+# table type 2: 첫행만 추출
+def advanced_table2_info_read(table_element, table_keys): # 나라장터 테이블 양식을 크롤링하여 dic형태 반환하는 함수
+    tb1info = initListDict(table_keys)
+    tbody = table_element.find_element(By.TAG_NAME, "tbody")
+    rows = tbody.find_elements(By.TAG_NAME, "tr")
+    for i, value in enumerate(rows):
+        for j in range(len(table_keys)):
+            if value.find_element(By.TAG_NAME,"td").text in ['공개된 정보가 없습니다.','자료없음','첨부된 파일이 없습니다.']: # 데이터가 없을 경우
+                tb1info[table_keys[j]].append('')
+            else: # 데이터가 있을 경우
+                body=value.find_elements(By.TAG_NAME,"td")[j]
+                tb1info[table_keys[j]].append(body.text)
+        if i == 1:
+            break
+
+    return tb1info
+
 def extract_number(num_str): # num_str 문자열에서 숫자반 추출하여 반환
     # numbers = re.sub(r'[^0-9]', '', num_str)
     numbers = None

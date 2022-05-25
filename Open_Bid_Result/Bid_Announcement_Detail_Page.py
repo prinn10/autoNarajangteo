@@ -44,44 +44,47 @@ def Init():
 
 def announcement_detail_crawling(table_names, table_element_list, info_tables, pri_value): # 물품 입찰 공고 상세 페이지 크롤링 함수, 함수 이름 바꿔야댐
     # 1. 물품 입찰공고 상세 페이지 table 정보 수집
-    tb_info = []
-    for i, table_name in enumerate(table_names):
-        if table_name == '공고일반' or table_name == '입찰집행 및 진행 정보' or table_name == '예정가격 결정 및 입찰금액 정보':# table type 1(th td th td)
-            tb_info.append(tools.advanced_table_info_read(table_element_list[table_name][0], info_tables[table_name][0]))
-        elif table_name == '가용금액공개' or table_name == '기초금액 공개' or table_name == '첨부 파일' or table_name == '입찰진행현황': # table type 2 (list table)
-            tb_info.append(tools.advanced_table1_info_read(table_element_list[table_name][0], info_tables[table_name][0]))
-        print('table_name : ', table_name)
-        print(tb_info[i])
+    try:
+        tb_info = []
+        for i, table_name in enumerate(table_names):
+            if table_name == '공고일반' or table_name == '입찰집행 및 진행 정보' or table_name == '예정가격 결정 및 입찰금액 정보':# table type 1(th td th td)
+                tb_info.append(tools.advanced_table_info_read(table_element_list[table_name][0], info_tables[table_name][0]))
+            elif table_name == '가용금액공개' or table_name == '기초금액 공개' or table_name == '첨부 파일' or table_name == '입찰진행현황': # table type 2 (list table)
+                tb_info.append(tools.advanced_table1_info_read(table_element_list[table_name][0], info_tables[table_name][0]))
+            print('table_name : ', table_name)
+            print(tb_info[i])
 
-    # 2. 첨부파일 규격서 정보 수집
-    # 2.1. 공고서 탐색 및 다운로드
+        # 2. 첨부파일 규격서 정보 수집
+        # 2.1. 공고서 탐색 및 다운로드
 
-    index = -1
-    for i in range(len(tb_info[5]['문서구분'])):
-        if tb_info[5]['문서구분'][i] == '공고서' and tb_info[table_names.index('첨부 파일')]['파일명'][i].find('hwp') != -1:
-            index = i
-            break
-    if index != -1:
-        tbody = table_element_list['첨부 파일'][0].find_element(By.TAG_NAME, "tbody")
-        rows = tbody.find_elements(By.TAG_NAME, "tr")
-        rows[index].find_elements(By.TAG_NAME,"td")[2].find_element(By.TAG_NAME,"a").click() # 공고서 다운로드
+        index = -1
+        for i in range(len(tb_info[5]['문서구분'])):
+            if tb_info[5]['문서구분'][i] == '공고서' and tb_info[table_names.index('첨부 파일')]['파일명'][i].find('hwp') != -1:
+                index = i
+                break
+        if index != -1:
+            tbody = table_element_list['첨부 파일'][0].find_element(By.TAG_NAME, "tbody")
+            rows = tbody.find_elements(By.TAG_NAME, "tr")
+            rows[index].find_elements(By.TAG_NAME,"td")[2].find_element(By.TAG_NAME,"a").click() # 공고서 다운로드
 
-        # 2.2. 공고서 정보 수집
-        download_path = 'C:\\Users\\정희운\\Downloads'
-        tools.waitFileDownload(download_path)
-        sleep(0.3)
-        file_name = os.listdir(download_path)
-        print('file open :', file_name[0])
-        findWord = ['±', '낙찰 하한율', '낙찰하한율', '예정가격']
-        plmi, min_value = readHWP.announcement_doc_crawling(os.path.join(download_path, file_name[0]), findWord) # 범위, 낙찰하한율 반환
-        tb_info.append({'±': [plmi], '낙찰하한율': [min_value]})
-        print(tb_info[7])
-    else:
-        print('공고서 없음')
+            # 2.2. 공고서 정보 수집
+            download_path = 'C:\\Users\\정희운\\Downloads'
+            tools.waitFileDownload(download_path)
+            sleep(0.3)
+            file_name = os.listdir(download_path)
+            print('file open :', file_name[0])
+            findWord = ['±', '낙찰 하한율', '낙찰하한율', '예정가격']
+            plmi, min_value = readHWP.announcement_doc_crawling(os.path.join(download_path, file_name[0]), findWord) # 범위, 낙찰하한율 반환
+            tb_info.append({'±': [plmi], '낙찰하한율': [min_value]})
+            print(tb_info[7])
+        else:
+            print('공고서 없음')
 
-    # 3.2 csv write
-    for i, tb in enumerate(tb_info):
-        tools.insert_value(tb, 'bid_detail'+str(i+1), pri_value)
+        # 3.2 csv write
+        for i, tb in enumerate(tb_info):
+            tools.insert_value(tb, 'bid_detail'+str(i+1), pri_value)
+    except:
+        print('수집 불가능 테이블 구조')
 
 
 # def rnaoeotkd(): # # 7. 구매대상물품
