@@ -103,7 +103,6 @@ class main:
                             tb1info[self.tb1_keys[j]].append(body.text)
                     tools.writeTb5(tb1info, 'lis_cra')
 
-
                     ## 2.2 개찰결과 목록 순환
                     for i in range(len(tb1info['업무'])):
                         self.driver = tools.driverInit(self.driver)
@@ -157,7 +156,6 @@ class main:
                             self.driver.back()
                             self.driver.back()
 
-
                         print('list 탐색 ', i + 1, len(tb1info['업무']))
 
                     # 3. 다음 페이지로 이동 이동
@@ -172,6 +170,9 @@ class main:
                         break
 
             tools.writeTb5({'date': [self.date]}, 'completed_page', save_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset') # 4. 해당 일자는 크롤링 완료됬다고 기록
+            print('페이지 순회 완료')
+            print('해당 페이지 리스트 개수', len(tb1info['업무']), '중 개찰완료 개수', self.nu_len)
+            self.monitoring.update('tot_cou', time.time() - toustart, print_type='all_element')
 
 if __name__ == '__main__':
     tstart = time.time()

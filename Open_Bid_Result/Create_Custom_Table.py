@@ -87,6 +87,7 @@ def extract_range(tb_info): # 예가범위 전처리
 
 def unique_row(tb_info): # 중복행 제거
     pass
+
 def Custom_Table():
     # tstart = time.time()
     Init()
