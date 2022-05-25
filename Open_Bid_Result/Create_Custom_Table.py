@@ -29,9 +29,9 @@ import csv
 def Init():
     dataset_path = 'C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset'
 
-    keys = ['입찰공고번호','기초금액','예정가격', '예가범위', '참여업체수', '낙찰하한율', '기초금액기준 상위개수']
-    file_names = ['bid_detail1.csv', '예비가격산정결과2.csv', '예비가격산정결과2.csv', '예비가격산정결과1.csv', 'lis_cra.csv', 'bid_detail8.csv', '예비가격산정결과1.csv']
-    read_lines = [3, 2, 1, 8, 7, 2, 9]
+    keys = ['입찰공고번호','기초금액','예정가격', '예가범위', '참여업체수', '낙찰하한율', '기초금액기준 상위개수', '투찰금액(원)', '투찰률(%)']
+    file_names = ['bid_detail1.csv', '예비가격산정결과2.csv', '예비가격산정결과2.csv', '예비가격산정결과1.csv', 'lis_cra.csv', 'bid_detail8.csv', '예비가격산정결과1.csv','개찰순위','개찰순위']
+    read_lines = [3, 2, 1, 8, 7, 2, 9, 4, 5]
     tb_info = tools.initListDict(keys)
 
 

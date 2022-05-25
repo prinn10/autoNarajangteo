@@ -8,10 +8,15 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException
+
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 import zipfile
 from pathlib import Path
 import shutil
+from datetime import datetime, timedelta
 
 def writeTb1(tbinfo): # 크롤링 데이터 메타정보 저장함수
     db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
@@ -39,6 +44,18 @@ def initListDict(keys):
         ListDict[key] = []
     return ListDict
 
+def calculate_date(date, num):
+    year = int(date[0:4])
+    month = int(date[5:7])
+    day = int(date[8:10])
+    print(year, month, day)
+    now = datetime(year, month, day)
+    now = now - timedelta(days = num)
+
+    strnow = str(now)[0:10]
+    print(strnow)
+    return strnow[0:4]+'/'+strnow[5:7]+'/'+strnow[8:10]
+
 def waitFileDownload(download_path):
     while True:
         file_list = os.listdir(download_path)
@@ -57,6 +74,7 @@ def waitFileDownload(download_path):
 
 def driverInit(driver):
     driver.switch_to.default_content()
+    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "sub")))
     driver.switch_to.frame(driver.find_element(By.NAME, 'sub'))
     driver.switch_to.frame(driver.find_element(By.NAME, 'main'))
     # driver.implicitly_wait(5)
@@ -161,6 +179,16 @@ def del_dow(tb_info, index): # tb_info : dictionary type , value : list type
     for key in tb_info.keys():
         del tb_info[key][index]
     return tb_info
+
+def check_final_page(driver): # 해당 페이지가 마지막 페이지인지 검사하는 기능 제공
+    driver = driverInit(driver)
+    div = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "/html/body/div/div[2]/div[3]")))
+    text_info = div.text
+    if text_info.find('다음') == -1 and text_info.find('끝') == -1 and text_info.find('더보기') == -1:
+        print('마지막 페이지')
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     # num = extract_number('대상으로 예정가격 이하로서 예정가격 대비  80.1243%이상 최저가 입찰자 순으로 <조달청 물품구매 적격심사 세부기준>에 따라 평가하여 종합평점이  이상인 자를 낙찰자로 결정')
