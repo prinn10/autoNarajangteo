@@ -177,5 +177,5 @@ class main:
 if __name__ == '__main__':
     tstart = time.time()
     main = main()
-    main.total_process(type='asd')
+    main.total_process(type='resume')
     print("총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
