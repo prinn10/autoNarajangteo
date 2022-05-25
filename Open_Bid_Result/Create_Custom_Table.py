@@ -58,6 +58,10 @@ def Init():
     tb_info = tools.insert_value(tb_info, 'dataset', pri_value=None, save_path=dataset_path)
     tb_info = del_element(tb_info)
     tb_info = extract_range(tb_info)
+    tb_info = rowDel(tb_info)
+    tb_info = overlap(tb_info)
+    tb_info = plusMinus(tb_info)
+    tb_info = commaDel(tb_info)
     tb_info = tools.insert_value(tb_info, 'dataset2', pri_value=None, save_path=dataset_path)
 
 def del_element(tb_info): #결측치 제거
@@ -92,7 +96,65 @@ def Custom_Table():
     Init()
      #print("총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
 
+def rowDel(tb_info):
+    i = 0
+    delCnt = 0
+    while True:
+        for key in tb_info.keys():
+            if tb_info[key][i] == '':
+                for keyy in tb_info.keys():
+                    del tb_info[keyy][i]
+                i -= 1
+                delCnt += 1
+                break
+        i += 1
+        if i >= len(tb_info['입찰공고번호']):
+            break
+    return tb_info
+
+
+def overlap(tb_info):
+    i = 0
+    ovlCnt = 0
+    while True:
+        j = i + 1
+        while True:
+            if tb_info['입찰공고번호'][i] == tb_info['입찰공고번호'][j]:
+                ovlCnt += 1
+                print(tb_info['입찰공고번호'][i],tb_info['입찰공고번호'][j])
+                for key in tb_info.keys():
+                    del tb_info['입찰공고번호'][j]
+                j -= 1
+            j += 1
+            if j > len(tb_info['입찰공고번호']) - 1:
+                break
+        i += 1
+        if i > len(tb_info['입찰공고번호'])-2:
+            break
+    print("overlaps = ", ovlCnt)
+    return tb_info
+
+
+def plusMinus(tb_info):
+    for i in range(len(tb_info['예가범위'])):
+        # print(tb_info['예가범위'][i])
+        if tb_info['예가범위'][i].find('3') != -1:
+            tb_info['예가범위'][i] = '3'
+        elif tb_info['예가범위'][i].find('2') != -1:
+            tb_info['예가범위'][i] = '2'
+        elif tb_info['예가범위'][i].find('1') != -1:
+            tb_info['예가범위'][i] = '1'
+        else:
+            tb_info['예가범위'][i] = '0'
+    return tb_info
+
+
+def commaDel(tb_info):
+    for i in range(len(tb_info['기초금액'])):
+        tb_info['기초금액'][i] =  tb_info['기초금액'][i].replace(",", "")
+    for i in range(len(tb_info['예정가격'])):
+        tb_info['예정가격'][i] = tb_info['예정가격'][i].replace(",", "")
+    return tb_info
+
 if __name__ == '__main__':
     Custom_Table()
-
-asdfasdfasdf
