@@ -32,7 +32,7 @@ class main:
         self.driver = tools.driverInit(self.driver)
         self.nu_len = 0 # 개찰완료 개수
         self.monitoring = Monitoring.monitoring()
-        self.date = '2018/01/07'
+        self.date = '2022/01/03'
         self.dataset_path = 'C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset'
         self.tb1_keys = ['업무', '입찰공고번호', '재입찰번호', '공고명', '수요기관', '개찰일시', '참가수', '낙찰예정자', '투찰금액/투찰금리', '투찰률(%)','진행상황']
 
@@ -74,23 +74,26 @@ class main:
         self.driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[2]').send_keys(self.date)  # 종료일 입력
         self.driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[4]/div/a[1]').click()  # 검색
 
-    def total_process(self):
+    def total_process(self, type='resume'):
         # 1. 날짜 초기화
         while True:
-            self.date = tools.calculate_date(self.date, 1)  # 날짜 빼기 연산
-            if self.completed_date_check():  # 1.1. 해당 날짜 크롤링 여부를 확인
-                print('해당 날짜는 이미 크롤링 되었으므로 다음 날짜로 넘어갑니다')
-                continue
+            if type != 'resume':
+                self.date = tools.calculate_date(self.date, 1)  # 날짜 빼기 연산
+                if self.completed_date_check():  # 1.1. 해당 날짜 크롤링 여부를 확인
+                    print('해당 날짜는 이미 크롤링 되었으므로 다음 날짜로 넘어갑니다')
+                    continue
 
-            # 1.2 날짜 선택 및 검색
-            self.select_date()
+                # 1.2 날짜 선택 및 검색
+                self.select_date()
             while True:
+                readstart = time.time()
                 # 2. 한 페이지의 리스트를 순회
                 tb1info = tools.initListDict(self.tb1_keys)
                 table = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[2]/table')))
                 if table.text.find('검색된 데이터가 없습니다.') != -1:
                     self.open_date_select_page()
                     self.date = tools.calculate_date(self.date, 1)
+                    self.monitoring.update('lis_cra', time.time() - readstart, print_type='updated_element')
                     break
                 else:
                     ## 2.1 개찰결과 목록 크롤링 및 저장
@@ -102,6 +105,7 @@ class main:
                             body = value.find_elements(By.TAG_NAME, "td")[j]
                             tb1info[self.tb1_keys[j]].append(body.text)
                     tools.writeTb5(tb1info, 'lis_cra')
+                    self.monitoring.update('lis_cra', time.time() - readstart, print_type='updated_element')
 
                     ## 2.2 개찰결과 목록 순환
                     for i in range(len(tb1info['업무'])):
@@ -111,6 +115,7 @@ class main:
                             print('skip 유찰, 재입찰, 상세조회')
 
                         else:  # 진행상황 == '개찰완료'
+                            toustart = time.time()
                             ## 2.3. 물품입찰공고상세 이동
                             self.driver.find_element(By.XPATH, '/html/body/div/div[2]/div[2]/table/tbody/tr[' + str(
                                 i + 1) + ']/td[11]/div/a').click()  # 해당 행이 개찰완료이면 개찰완료 버튼 클릭
@@ -125,20 +130,15 @@ class main:
                                 print('페이지 로딩중... 예비가격 산정결과')
                                 sleep(0.1)
                             self.driver.switch_to.window(self.driver.window_handles[-1])  # 최근 열린 탭으로 전환
-                            if WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, "div"))).text.find('협상에 의한 계약의 예비가격 및 예정가격은 최종낙찰자 선정 이후에 공개됩니다.') != -1:
+
+                            if WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, "div"))).text.find('협상에 의한 계약의 예비가격 및 예정가격은 최종낙찰자 선정 이후에 공개됩니다.') != -1:
                                 print('최종낙찰자 미선정으로 정보추출 불가능..')
                             else:
-                                element = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, "container")))
+                                element = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.ID, "container")))
                                 print('페이지 로딩 완료, 예비가격 산정결과')
                                 ### 2.4.1. 예비가격 산정결과 페이지 크롤링
                                 Preliminary_Pricing_Results_Page.Preliminary_Pricing_Results_Page_Crawling(self.driver,tb1info['입찰공고번호'][i])
 
-                            ### 2.4.2. 예비가격 산정결과 팝업을 닫고 driver 초기화
-                            if WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, "div"))).text.find('협상에 의한 계약의 예비가격 및 예정가격은 최종낙찰자 선정 이후에 공개됩니다.') != -1:
-                                print('최종낙찰자 미선정으로 정보추출 불가능..')
-                            else:
-                                WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, "container")))
-                                print('페이지 로딩 완료, 예비가격 산정결과')
                             self.driver.close()
                             self.driver.switch_to.window(self.driver.window_handles[-1])
                             self.driver = tools.driverInit(self.driver)
@@ -156,7 +156,8 @@ class main:
                             self.driver.back()
                             self.driver.back()
 
-                        print('list 탐색 ', i + 1, len(tb1info['업무']))
+                            self.monitoring.update('tot_cou', time.time() - toustart, print_type='all_element')
+                            print('list 탐색 ', i + 1, len(tb1info['업무']))
 
                     # 3. 다음 페이지로 이동 이동
                     if tools.check_final_page(self.driver) == False:
@@ -172,10 +173,9 @@ class main:
             tools.writeTb5({'date': [self.date]}, 'completed_page', save_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset') # 4. 해당 일자는 크롤링 완료됬다고 기록
             print('페이지 순회 완료')
             print('해당 페이지 리스트 개수', len(tb1info['업무']), '중 개찰완료 개수', self.nu_len)
-            self.monitoring.update('tot_cou', time.time() - toustart, print_type='all_element')
 
 if __name__ == '__main__':
     tstart = time.time()
     main = main()
-    main.total_process()
+    main.total_process(type='asd')
     print("총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간
