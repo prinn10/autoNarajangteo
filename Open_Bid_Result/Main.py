@@ -36,15 +36,6 @@ class main:
         self.dataset_path = 'C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset'
         self.tb1_keys = ['업무', '입찰공고번호', '재입찰번호', '공고명', '수요기관', '개찰일시', '참가수', '낙찰예정자', '투찰금액/투찰금리', '투찰률(%)','진행상황']
 
-    def move_next_page(self):
-        sleep(1)
-        self.driver = tools.driverInit(self.driver)
-        div = self.driver.find_element(By.XPATH, '/html/body/div/div[2]/div[3]')
-        cur_page = div.find_element(By.TAG_NAME, 'strong')
-        print('현재 페이지', cur_page.get_attribute("innerText"), '다음페이지 이동')
-        div.find_elements(By.TAG_NAME, 'a')[-1].click()
-        sleep(1)
-
     def completed_date_check(self):  # 해당 날짜 크롤링 여부를 확인
         try:
             self.date = tools.calculate_date(self.date, 1)  # 날짜 빼기 연산
@@ -181,57 +172,6 @@ class main:
                         break
 
             tools.writeTb5({'date': [self.date]}, 'completed_page', save_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset') # 4. 해당 일자는 크롤링 완료됬다고 기록
-
-    # 개찰결과 목록 리스트 정보 수집
-    def ListCrawling(self):
-        readstart = time.time()
-        self.driver = tools.driverInit(self.driver)
-
-        tb1_keys = ['업무','입찰공고번호','재입찰번호','공고명','수요기관','개찰일시','참가수','낙찰예정자','투찰금액/투찰금리','투찰률(%)','진행상황']
-        tb1info = tools.initListDict(tb1_keys)
-
-        table = self.driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/table')
-        tbody = table.find_element(By.TAG_NAME, "tbody")
-        rows = tbody.find_elements(By.TAG_NAME, "tr")
-        for i, value in enumerate(rows):
-            for j in range(11):
-                body=value.find_elements(By.TAG_NAME,"td")[j]
-                tb1info[tb1_keys[j]].append(body.text)
-
-        tools.writeTb5(tb1info, 'lis_cra')
-
-        self.monitoring.update('lis_cra', time.time() - readstart, print_type='updated_element')
-        # 목록 순환 소스
-        for i in range(len(tb1info['업무'])):
-            self.driver = tools.driverInit(self.driver)
-
-            if tb1info[tb1_keys[-1]][i] in ['유찰', '재입찰', '상세조회']: # 진행상황 == 유찰
-                print('skip 유찰, 재입찰, 상세조회')
-
-            else:# 진행상황 == '개찰완료'
-                toustart = time.time()
-                self.nu_len += 1
-                sleep(1)
-                self.driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/table/tbody/tr['+str(i+1)+']/td[11]/div/a').click() # 해당 행이 개찰완료이면 개찰완료 버튼 클릭
-                sleep(1)
-
-                Bid_Result_Detail_Page.Bid_Result_Detail_Page_Crawling(self.driver, tb1info['입찰공고번호'][i]) # 물품 개찰결과 상세조회 페이지 크롤링
-                Preliminary_Pricing_Results_Page.Preliminary_Pricing_Results_Page_Crawling(self.driver, tb1info['입찰공고번호'][i]) # 예비가격 산정결과 페이지 크롤링
-                self.driver = tools.driverInit(self.driver)
-                self.driver.find_element(By.CLASS_NAME, 'btn_mdl').click() # 공고상세 페이지로 이동
-                sleep(1)
-                Bid_Announcement_Detail_Page.Bid_Announcement_Detail_Page_Crawling(self.driver, tb1info['입찰공고번호'][i]) # 공고상세 페이지 크롤링
-
-                self.driver.back()
-                sleep(1) # 이부분 속도 수정
-                self.driver.back()
-                sleep(1)
-
-                self.monitoring.update('tot_cou', time.time() - toustart, print_type='all_element')
-
-        print('페이지 순회 완료')
-        print('해당 페이지 리스트 개수', len(tb1info['업무']), '중 개찰완료 개수', self.nu_len)
-
 
 if __name__ == '__main__':
     tstart = time.time()

@@ -18,25 +18,9 @@ from pathlib import Path
 import shutil
 from datetime import datetime, timedelta
 
-def writeTb1(tbinfo): # 크롤링 데이터 메타정보 저장함수
-    db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
-    db.to_csv('tb1.csv', mode='a', header=False, index=True, encoding='utf-8-sig')
-
-def writeTb2(tbinfo): # 크롤링 데이터 메타정보 저장함수
-    db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
-    db.to_csv('tb2.csv', mode='a', header=False, index=True, encoding='utf-8-sig')
-
-def writeTb3(tbinfo): # 크롤링 데이터 메타정보 저장함수
-    db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
-    db.to_csv('tb3.csv', mode='a', header=False, index=True, encoding='utf-8-sig')
-
-def writeTb4(tbinfo): # 크롤링 데이터 메타정보 저장함수
-    pass
-
 def writeTb5(tbinfo, filename, save_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset'): # 물품입찰공고상세
     db = pd.DataFrame(tbinfo, columns=tbinfo.keys())
     db.to_csv(os.path.join(save_path, filename+'.csv'), mode='a', header=False, index=True, encoding='utf-8-sig')
-    pass
 
 def initListDict(keys):
     ListDict = {}
