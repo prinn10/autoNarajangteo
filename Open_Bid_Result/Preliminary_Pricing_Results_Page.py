@@ -17,10 +17,6 @@ import tools
 import readHWP
 import Monitoring
 
-def page_open(driver): # 예비가격 산정결과 페이지 열기
-    driver.find_element(By.XPATH, '/html/body/div/div[2]/form[1]/div[2]/table/tbody/tr[5]/td[2]/div/a').click()
-    sleep(2)
-
 def Init(): # 각종 요소 초기화
     ## table names
     table_names = ['입찰공고정보', '기초금액 정보']
@@ -37,7 +33,6 @@ def Init(): # 각종 요소 초기화
     return table_names, table_element_list, info_tables
 
 def search_table_xpath(driver, table_element_list, info_tables): # table elements 탐색
-    driver.switch_to.window(driver.window_handles[-1])  # 최근 열린 탭으로 전환
     tables_xpath = driver.find_elements(By.TAG_NAME, 'table')  # 리스트 타입의 테이블을 읽어들임
 
     print(len(tables_xpath))
@@ -57,34 +52,23 @@ def search_table_xpath(driver, table_element_list, info_tables): # table element
 
 
 def Preliminary_Pricing_Results_Crawling(driver, table_names, table_element_list, info_tables, pri_value): # 해당 페이지 정보 크롤링
-    print(driver.window_handles)
-    driver.switch_to.window(driver.window_handles[-1]) # 최근 열린 탭으로 전환
+    tb_info = []
+    for i, table_name in enumerate(table_names):
+        if table_name == '입찰공고정보' or table_name == '기초금액 정보':  # table type 1(th td th td)
+            tb_info.append(tools.advanced_table_info_read(table_element_list[table_name][0], info_tables[table_name][0]))
+        # elif table_name == '예비가격 정보제공':  # table type 2 (list table)
+        #     tb_info.append(tools.adadvanced_table1_info_read(table_element_list[table_name], info_tables[table_name][0]))
+        print('table_name : ', table_name)
+        print(tb_info[i])
 
-    if driver.find_element(By.TAG_NAME, 'div').text.find('협상에 의한 계약의 예비가격 및 예정가격은 최종낙찰자 선정 이후에 공개됩니다.') != -1:
-        print('최종낙찰자 미선정으로 정보추출 불가능..')
-        pass
-    else:
-        tb_info = []
-        for i, table_name in enumerate(table_names):
-            if table_name == '입찰공고정보' or table_name == '기초금액 정보':  # table type 1(th td th td)
-                tb_info.append(tools.advanced_table_info_read(table_element_list[table_name][0], info_tables[table_name][0]))
-            # elif table_name == '예비가격 정보제공':  # table type 2 (list table)
-            #     tb_info.append(tools.adadvanced_table1_info_read(table_element_list[table_name], info_tables[table_name][0]))
-            print('table_name : ', table_name)
-            print(tb_info[i])
-
-        # 3.2 csv write
-        for i, tb in enumerate(tb_info):
-            tools.insert_value(tb, '예비가격산정결과'+str(i+1), pri_value)
-
-    driver.close()
-    driver.switch_to.window(driver.window_handles[-1])
+    # 3.2 csv write
+    for i, tb in enumerate(tb_info):
+        tools.insert_value(tb, '예비가격산정결과'+str(i+1), pri_value)
 
 
 def Preliminary_Pricing_Results_Page_Crawling(driver, pri_value):
     tstart = time.time()
     monitoring = Monitoring.monitoring()
-    page_open(driver)
     table_names, table_element_list, info_tables = Init()
     table_element_list = search_table_xpath(driver, table_element_list, info_tables)
     Preliminary_Pricing_Results_Crawling(driver, table_names, table_element_list, info_tables, pri_value)
@@ -95,5 +79,11 @@ if __name__ == '__main__':
     chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
     driver = tools.driverInit(driver)
+
+    driver.find_element(By.XPATH, '/html/body/div/div[2]/form[1]/div[2]/table/tbody/tr[5]/td[2]/div/a').click()
+    while len(driver.window_handles) < 2:
+        print('페이지 로딩중... 예비가격 산정결과')
+        sleep(0.1)
+    driver.switch_to.window(driver.window_handles[-1])  # 최근 열린 탭으로 전환
 
     Preliminary_Pricing_Results_Page_Crawling(driver, '')
