@@ -62,14 +62,15 @@ class main:
         for i in range(len(tb1info['업무'])):
             self.driver = tools.driverInit(self.driver)
 
-            if tb1info[tb1_keys[-1]][i] == '유찰' or tb1info[tb1_keys[-1]][i] == '재입찰' or tb1info[tb1_keys[-1]][i] == '상세조회': # 진행상황 == 유찰
+            if tb1info[tb1_keys[-1]][i] in ['유찰', '재입찰', '상세조회']: # 진행상황 == 유찰
                 print('skip 유찰, 재입찰, 상세조회')
 
             else:# 진행상황 == '개찰완료'
                 toustart = time.time()
                 self.nu_len += 1
+                sleep(1)
                 self.driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/table/tbody/tr['+str(i+1)+']/td[11]/div/a').click() # 해당 행이 개찰완료이면 개찰완료 버튼 클릭
-                sleep(2)
+                sleep(1)
 
                 Bid_Result_Detail_Page.Bid_Result_Detail_Page_Crawling(self.driver, tb1info['입찰공고번호'][i]) # 물품 개찰결과 상세조회 페이지 크롤링
                 Preliminary_Pricing_Results_Page.Preliminary_Pricing_Results_Page_Crawling(self.driver, tb1info['입찰공고번호'][i]) # 예비가격 산정결과 페이지 크롤링

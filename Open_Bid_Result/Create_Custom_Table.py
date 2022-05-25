@@ -29,7 +29,7 @@ import csv
 def Init():
     dataset_path = 'C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset'
 
-    keys = ['입찰공고번호','기초금액','예정가격','예가범위','참여업체수', '낙찰하한율', '기초금액기준 상위개수']
+    keys = ['입찰공고번호','기초금액','예정가격', '예가범위', '참여업체수', '낙찰하한율', '기초금액기준 상위개수']
     file_names = ['bid_detail1.csv', '예비가격산정결과2.csv', '예비가격산정결과2.csv', '예비가격산정결과1.csv', 'lis_cra.csv', 'bid_detail8.csv', '예비가격산정결과1.csv']
     read_lines = [3, 2, 1, 8, 7, 2, 9]
     tb_info = tools.initListDict(keys)
@@ -55,8 +55,38 @@ def Init():
                 f.close()
 
 
-    tools.insert_value(tb_info, 'dataset', pri_value=None, save_path=dataset_path)
+    tb_info = tools.insert_value(tb_info, 'dataset', pri_value=None, save_path=dataset_path)
+    tb_info = del_element(tb_info)
+    tb_info = extract_range(tb_info)
+    tb_info = tools.insert_value(tb_info, 'dataset2', pri_value=None, save_path=dataset_path)
 
+def del_element(tb_info): #결측치 제거
+    i=0
+    lenth = len(tb_info['입찰공고번호'])
+    while i < lenth:
+        print(i, lenth)
+        for key in tb_info.keys():
+            if tb_info[key][i] == '':
+                for key in tb_info.keys():
+                    del tb_info[key][i]
+                i -= 1
+                lenth = len(tb_info['입찰공고번호'])
+                break
+        i += 1
+    return tb_info
+
+def extract_range(tb_info): # 예가범위 전처리
+    tb_info['예가범위1'] = []
+    tb_info['예가범위2'] = []
+    for i in range(len(tb_info['입찰공고번호'])):
+            num_list = tools.extract_number(tb_info['예가범위'][i])
+            tb_info['예가범위1'].append(num_list[0])
+            tb_info['예가범위2'].append(num_list[1])
+    tb_info.pop('예가범위')
+    return tb_info
+
+def unique_row(tb_info): # 중복행 제거
+    pass
 def Custom_Table():
     # tstart = time.time()
     Init()

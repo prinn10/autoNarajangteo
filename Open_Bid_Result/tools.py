@@ -143,6 +143,8 @@ def insert_value(tb_info, table_name, pri_value=None, save_path='C:\\pycharm\\so
     db = pd.DataFrame(tb_info, columns=tb_info.keys())
     db.to_csv(os.path.join(save_path, table_name+'.csv'), mode='a', header=False, index=True, encoding='utf-8-sig')
 
+    return tb_info
+
 def move_file(src_file_path, download_path = None, dst_dir_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\debug'):
     if download_path == None:
         try:
@@ -154,6 +156,11 @@ def move_file(src_file_path, download_path = None, dst_dir_path='C:\\pycharm\\so
             shutil.move(os.path.join(download_path, src_file_path),dst_dir_path)
         except:
             os.remove(os.path.join(download_path, src_file_path))
+
+def del_dow(tb_info, index): # tb_info : dictionary type , value : list type
+    for key in tb_info.keys():
+        del tb_info[key][index]
+    return tb_info
 
 if __name__ == '__main__':
     # num = extract_number('대상으로 예정가격 이하로서 예정가격 대비  80.1243%이상 최저가 입찰자 순으로 <조달청 물품구매 적격심사 세부기준>에 따라 평가하여 종합평점이  이상인 자를 낙찰자로 결정')
