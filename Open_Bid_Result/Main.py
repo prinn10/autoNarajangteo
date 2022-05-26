@@ -16,6 +16,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from time import sleep
 
+import csv
+
 import tools
 import Monitoring
 
@@ -38,12 +40,11 @@ class main:
 
     def completed_date_check(self):  # 해당 날짜 크롤링 여부를 확인
         try:
-            self.date = tools.calculate_date(self.date, 1)  # 날짜 빼기 연산
             completed_page_list = []
             f = open(os.path.join(self.dataset_path, 'completed_page.csv'), 'r', encoding='UTF8')
             rdr = csv.reader(f)
             for line in rdr:
-                completed_page_list.append(line[0])
+                completed_page_list.append(line[1])
             f.close()
             if self.date in completed_page_list:
                 return True
@@ -68,17 +69,18 @@ class main:
         print(self.date, '크롤링 시작')
         WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, "container")))
         print('페이지 로딩 완료, 입찰 정보 검색')
-        self.driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[1]').clear()  # 시작일 입력
-        self.driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[1]').send_keys(self.date)  # 시작일 입력
-        self.driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[2]').clear()  # 종료일 입력
-        self.driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[2]').send_keys(self.date)  # 종료일 입력
+        self.driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[1]').clear()  # 시작일 입력
+        self.driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[1]').send_keys(self.date)  # 시작일 입력
+        self.driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[2]').clear()  # 종료일 입력
+        self.driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[2]').send_keys(self.date)  # 종료일 입력
         self.driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[4]/div/a[1]').click()  # 검색
 
-    def total_process(self, type='resume'):
+    def total_process(self, type):
         # 1. 날짜 초기화
         while True:
-            if type != 'resume':
+            if type == 'resume':
                 self.date = tools.calculate_date(self.date, 1)  # 날짜 빼기 연산
+                res = self.completed_date_check()
                 if self.completed_date_check():  # 1.1. 해당 날짜 크롤링 여부를 확인
                     print('해당 날짜는 이미 크롤링 되었으므로 다음 날짜로 넘어갑니다')
                     continue
@@ -92,8 +94,8 @@ class main:
                 tb1info = tools.initListDict(self.tb1_keys)
                 table = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[2]/div[2]/table')))
                 if table.text.find('검색된 데이터가 없습니다.') != -1:
+                    print('검색된 데이터가 없습니다.')
                     self.open_date_select_page()
-                    self.date = tools.calculate_date(self.date, 1)
                     self.monitoring.update('lis_cra', time.time() - readstart, print_type='updated_element')
                     break
                 else:
@@ -170,7 +172,7 @@ class main:
                     else:  ## 3.1. 현재 페이지가 마지막 페이지면 날짜 선택창으로 이동
                         self.driver = self.open_date_select_page()
                         break
-
+            print('date 저장완료', self.date)
             tools.writeTb5({'date': [self.date]}, 'completed_page', save_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset') # 4. 해당 일자는 크롤링 완료됬다고 기록
             print('페이지 순회 완료')
 

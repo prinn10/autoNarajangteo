@@ -32,12 +32,10 @@ def calculate_date(date, num):
     year = int(date[0:4])
     month = int(date[5:7])
     day = int(date[8:10])
-    print(year, month, day)
     now = datetime(year, month, day)
     now = now - timedelta(days = num)
 
     strnow = str(now)[0:10]
-    print(strnow)
     return strnow[0:4]+'/'+strnow[5:7]+'/'+strnow[8:10]
 
 def waitFileDownload(download_path):
