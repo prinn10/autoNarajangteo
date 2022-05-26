@@ -104,20 +104,17 @@ def announcement_doc_crawling(file_path, findWord = None):
         print('res ', range, min_value)
         hwp.Quit()
         sleep(1)
-        if min_value == '':
-            print('낙찰하한율이 존재하지 않습니다. 파일을 이동합니다')
-            tools.move_file(file_path)
-        else:
-            os.remove(file_path)  # 확인 후 해당 파일 삭제
+        # if min_value == '':
+        #     print('낙찰하한율이 존재하지 않습니다. 파일을 이동합니다')
+        #     tools.move_file(file_path)
+        # else:
+        os.remove(file_path)  # 확인 후 해당 파일 삭제
         return range, min_value
     except:
-        # 다운로드 파일이 존재할 경우
-        print('공고문 숫자 추출에서 오류 발생... 해당 파일을 debug폴더로 이동 혹은 삭제합니다')
-        download_path = 'C:\\Users\\정희운\\Downloads'
-        if len(os.listdir(download_path)) > 0:
-            hwp.Quit()
-            tools.move_file(os.listdir(download_path)[0], download_path = download_path)
-            return '', ''
+        # print('공고문 숫자 추출에서 오류 발생... 해당 파일을 debug폴더로 이동 혹은 삭제합니다')
+        hwp.Quit()
+        os.remove(file_path)
+        return '', ''
 
 if __name__ == '__main__':
     download_path = 'C:\\Users\\정희운\\Downloads'

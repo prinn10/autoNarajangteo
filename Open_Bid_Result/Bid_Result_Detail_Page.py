@@ -19,7 +19,7 @@ import Monitoring
 # 물품개찰결과상세조회 페이지
 def bid_res_crawling(driver, pri_value): # 입찰결과 테이블 크롤링 함수
     # 1. 입찰결과 테이블 키 값 리스트 정의
-    bid_res_keys = ['입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관', '실제개찰일시', '복수예비가 및\n예정가격', '적격심사결과', '규격제안서 평가결과\n조회', '동일가격추첨결과', '유의사항']
+    bid_res_keys = ['입찰공고번호', '참조번호', '공고명', '공고기관', '수요기관', '공고담당자', '집행관', '실제개찰일시', '복수예비가 및\n예정가격', '적격심사결과','기술평가점수 조회', '규격제안서 평가결과\n조회', '동일가격추첨결과', '유의사항']
     table = []
     table.append(driver.find_element(By.XPATH, '/html/body/div/div[2]/form[1]/div[2]/table'))
     tb2info = tools.advanced_table_info_read(table[0], bid_res_keys)

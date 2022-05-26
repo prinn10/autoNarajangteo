@@ -34,7 +34,7 @@ class main:
         self.driver = tools.driverInit(self.driver)
         self.nu_len = 0 # 개찰완료 개수
         self.monitoring = Monitoring.monitoring()
-        self.date = '2022/01/03'
+        self.date = '2022/05/20'
         self.dataset_path = 'C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset'
         self.tb1_keys = ['업무', '입찰공고번호', '재입찰번호', '공고명', '수요기관', '개찰일시', '참가수', '낙찰예정자', '투찰금액/투찰금리', '투찰률(%)','진행상황']
 
@@ -63,8 +63,7 @@ class main:
     def select_date(self):
         chrome_options = Options()
         chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-        self.driver = webdriver.Chrome(executable_path='chromedriver',
-                                       options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+        self.driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)  # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
         self.driver = tools.driverInit(self.driver)
         print(self.date, '크롤링 시작')
         WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, "container")))
@@ -75,19 +74,20 @@ class main:
         self.driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[3]/form/table/tbody/tr[4]/td/div/div[4]/div[4]/input[2]').send_keys(self.date)  # 종료일 입력
         self.driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[4]/div/a[1]').click()  # 검색
 
-    def total_process(self, type):
+    def total_process(self, type, date=None):
         # 1. 날짜 초기화
         while True:
             if type == 'resume':
                 self.date = tools.calculate_date(self.date, 1)  # 날짜 빼기 연산
                 res = self.completed_date_check()
                 if self.completed_date_check():  # 1.1. 해당 날짜 크롤링 여부를 확인
-                    print('해당 날짜는 이미 크롤링 되었으므로 다음 날짜로 넘어갑니다')
+                    print(self.date,'해당 날짜는 이미 크롤링 되었으므로 다음 날짜로 넘어갑니다')
                     continue
                 # 1.2 날짜 선택 및 검색
                 self.select_date()
             else:
-                type = 'asd'
+                self.date=date
+                type = 'resume'
             while True:
                 readstart = time.time()
                 # 2. 한 페이지의 리스트를 순회
@@ -178,6 +178,8 @@ class main:
 
 if __name__ == '__main__':
     tstart = time.time()
+    type = input()
+    date = input()
     main = main()
-    main.total_process(type='resume')
+    main.total_process(type=type, date=date)
     print("총 처리 시간 :", time.time() - tstart)  # 현재시각 - 시작시간 = 실행 시간

@@ -3,29 +3,6 @@ import os
 import csv
 # 학습에 필요한 변수만 수집하여 저장하는 기능을 제공
 
-# 페이지 정보
-# 1. 개찰결과 목록
-# 2. 물품 개찰결과 상세조회
-# 3. 물품 입찰공고 상세
-# 4. 예비가격 산정결과
-# 페이지 별 테이블 정보
-# 1.1.개찰결과 목록
-# 2.1 입찰결과
-# 2.2 개찰순위
-# 3.1 공고일반
-# 3.2 입찰집행 및 진행 정보
-# 3.3 예정가격 결정 및 입찰금액 정보
-# 3.4 투찰제한 - 일반
-# 3.5 가용금액공개
-# 3.6 기초금액 공개
-# 3.7 구매대상물품
-# 3.8 첨부 파일
-# 3.9 입찰진행현황
-# 3.10 공고문
-# 4.1 입찰공고정보
-# 4.2 예비가격 정보제공
-# 4.3 기초금액 정보
-
 def Init():
     dataset_path = r"Dataset"
 
@@ -75,6 +52,8 @@ def Init():
 
     print(tb_info.keys())
     tb_info = tools.insert_value(tb_info, 'dataset_result', pri_value=None, save_path=dataset_path)
+def cal_target(tb_info): # 목표 투찰률 계산
+    tb_info[y] = []
 
 def open_bid_rank(bid_ann_num):
     f = open(os.path.join(r"Dataset",'개찰순위.csv'), 'r', encoding='UTF8')

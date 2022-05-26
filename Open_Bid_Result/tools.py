@@ -158,7 +158,7 @@ def insert_value(tb_info, table_name, pri_value=None, save_path='C:\\pycharm\\so
             tb_info['입찰공고번호'].append(pri_value)
 
     db = pd.DataFrame(tb_info, columns=tb_info.keys())
-    db.to_csv(os.path.join(save_path, table_name+'.csv'), mode='a', header=False, index=True, encoding='utf-8-sig')
+    db.to_csv(os.path.join(save_path, table_name+'.csv'), index=True, mode='a', encoding='utf-8-sig')
 
     return tb_info
 
