@@ -46,15 +46,21 @@ def Init():
         tb_info['투찰금액'].append(a)
         tb_info['투찰률'].append(b)
 
+    tb_info = rowDel(tb_info) #결측치 제거
+
+    tb_info = cal_target(tb_info) # 목표 투찰률 항목 추가
     tb_info = commaDel(tb_info) # 금액속성 , 제거
-
-
 
     print(tb_info.keys())
     tb_info = tools.insert_value(tb_info, 'dataset_result', pri_value=None, save_path=dataset_path)
 def cal_target(tb_info): # 목표 투찰률 계산
-    tb_info[y] = []
-
+    tb_info['target rate'] = []
+    for i in range(len(tb_info['입찰공고번호'])):
+        a = float(tb_info['낙찰하한율'][i])
+        b = float(tb_info['투찰률'][i])
+        res = round((a+b)/2, 4)
+        tb_info['target rate'].append(str(res))
+    return tb_info
 def open_bid_rank(bid_ann_num):
     f = open(os.path.join(r"Dataset",'개찰순위.csv'), 'r', encoding='UTF8')
     rdr = csv.reader(f)
