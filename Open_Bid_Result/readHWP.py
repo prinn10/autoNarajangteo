@@ -58,6 +58,7 @@ def advanced_open_and_findtext(file_path, findWord):
 
 def announcement_doc_crawling(file_path, findWord = None):
     try:
+        download_path = 'C:\\Users\\정희운\\Downloads'
         print(file_path)
         # 해당 공고문에서 낙찰하한율, 범위 찾는 함수
         hwp = win32.gencache.EnsureDispatch("HWPFrame.HwpObject")
@@ -104,16 +105,21 @@ def announcement_doc_crawling(file_path, findWord = None):
         print('res ', range, min_value)
         hwp.Quit()
         sleep(1)
+        for file_name in os.listdir(download_path):
+            os.remove(os.path.join(download_path, file_name))
+
         # if min_value == '':
         #     print('낙찰하한율이 존재하지 않습니다. 파일을 이동합니다')
         #     tools.move_file(file_path)
         # else:
-        os.remove(file_path)  # 확인 후 해당 파일 삭제
         return range, min_value
     except:
+        download_path = 'C:\\Users\\정희운\\Downloads'
         # print('공고문 숫자 추출에서 오류 발생... 해당 파일을 debug폴더로 이동 혹은 삭제합니다')
         hwp.Quit()
-        os.remove(file_path)
+        sleep(1)
+        for file_name in os.listdir(download_path):
+            os.remove(os.path.join(download_path, file_name))
         return '', ''
 
 if __name__ == '__main__':

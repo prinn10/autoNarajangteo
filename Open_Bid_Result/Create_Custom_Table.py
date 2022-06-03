@@ -6,9 +6,9 @@ import csv
 def Init():
     dataset_path = r"Dataset"
 
-    keys = ['입찰공고번호','기초금액','예정가격','예가범위','참여업체수', '낙찰하한율', '기초금액기준 상위개수']
-    file_names = ['bid_detail1.csv', '예비가격산정결과2.csv', '예비가격산정결과2.csv', '예비가격산정결과1.csv', 'lis_cra.csv', 'bid_detail8.csv', '예비가격산정결과1.csv']
-    read_lines = [3, 2, 1, 8, 7, 2, 9]
+    keys = ['입찰공고번호','기초금액','예정가격','예가범위','참여업체수', '낙찰하한율', '기초금액기준상위개수','투찰금액','투찰률']
+    file_names = ['bid_detail1.csv', '예비가격산정결과2.csv', '예비가격산정결과2.csv', '예비가격산정결과1.csv', 'lis_cra.csv', 'bid_detail8.csv', '예비가격산정결과1.csv', '개찰순위.csv', '개찰순위.csv']
+    read_lines = [3, 2, 1, 8, 7, 2, 9, 5, 6]
     tb_info = tools.initListDict(keys)
 
 
@@ -17,42 +17,46 @@ def Init():
             f = open(os.path.join(dataset_path,file_name), 'r', encoding='UTF8')
             rdr = csv.reader(f)
             for line in rdr:
+                print(line[read_line])
                 tb_info[key].append(line[read_line])
             f.close()
+
+    tb_info = overlap(tb_info)  # 중복값 제거
 
     for pri_value in tb_info['입찰공고번호']:
         for key, file_name, read_line in zip(keys, file_names, read_lines):
             if key != '입찰공고번호':
                 f = open(os.path.join(dataset_path,file_name), 'r', encoding='UTF8')
                 rdr = csv.reader(f)
+                ck = False
                 for line in rdr:
                     if pri_value in line:
                         tb_info[key].append(line[read_line])
+                        ck = True
                         break
+                if ck == False:
+                    tb_info[key].append('')
                 f.close()
 
-
-    tb_info = tools.insert_value(tb_info, 'dataset', pri_value=None, save_path=dataset_path)
+    tb_info = tools.dataset_insert_value(tb_info, 'dataset', pri_value=None, save_path=dataset_path)
 
     tb_info = rowDel(tb_info) #결측치 제거
-    tb_info = unique_element(tb_info) #중복값 제거
     tb_info = extract_range(tb_info) # 예가범위 전처리
-
-    # 투찰 요소 추가
-    tb_info['투찰금액'] = []
-    tb_info['투찰률'] = []
-    for i in range(len(tb_info['입찰공고번호'])):
-        a, b = open_bid_rank(tb_info['입찰공고번호'][i])
-        tb_info['투찰금액'].append(a)
-        tb_info['투찰률'].append(b)
-
-    tb_info = rowDel(tb_info) #결측치 제거
-
-    tb_info = cal_target(tb_info) # 목표 투찰률 항목 추가
     tb_info = commaDel(tb_info) # 금액속성 , 제거
-
+    tb_info = cal_target(tb_info) # 목표 투찰률 항목 추가
+    tb_info = cal_target_cost(tb_info) # target cost 항목 추가
     print(tb_info.keys())
-    tb_info = tools.insert_value(tb_info, 'dataset_result', pri_value=None, save_path=dataset_path)
+    tb_info = tools.dataset_insert_value(tb_info, 'dataset_result', pri_value=None, save_path=dataset_path)
+def cal_target_cost(tb_info):
+    tb_info['target cost'] = []
+
+    for i in range(len(tb_info['입찰공고번호'])):
+        a = float(tb_info['예정가격'][i])
+        b = float(tb_info['target rate'][i])
+        res = a * b / 100
+        tb_info['target cost'].append(str(res))
+    return tb_info
+
 def cal_target(tb_info): # 목표 투찰률 계산
     tb_info['target rate'] = []
     for i in range(len(tb_info['입찰공고번호'])):
@@ -69,17 +73,24 @@ def open_bid_rank(bid_ann_num):
             f.close()
             return line[5], line[6]
 
-def unique_element(tb_info): # 중복요소 제거
+def overlap(tb_info):
     i = 0
+    ovlCnt = 0
     while True:
-        res_list = list(filter(lambda x: tb_info['입찰공고번호'] == tb_info['입찰공고번호'][i], range(len(tb_info['입찰공고번호']))))
-        if len(res_list) > 1:
-            del_row(tb_info, i)
-            i -= 1
-            break
+        j = i + 1
+        while True:
+            if tb_info['입찰공고번호'][i] == tb_info['입찰공고번호'][j]:
+                ovlCnt += 1
+                print(tb_info['입찰공고번호'][i],tb_info['입찰공고번호'][j])
+                del tb_info['입찰공고번호'][j]
+                j -= 1
+            j += 1
+            if j > len(tb_info['입찰공고번호']) - 1:
+                break
         i += 1
-        if i >= len(tb_info['입찰공고번호']):
+        if i > len(tb_info['입찰공고번호'])-2:
             break
+    print("overlaps = ", ovlCnt)
     return tb_info
 
 def del_row(tb_info, i): # i행을 삭제하는 함수

@@ -34,7 +34,7 @@ class main:
         self.driver = tools.driverInit(self.driver)
         self.nu_len = 0 # 개찰완료 개수
         self.monitoring = Monitoring.monitoring()
-        self.date = '2022/05/20'
+        self.date = '2022/05/19'
         self.dataset_path = 'C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset'
         self.tb1_keys = ['업무', '입찰공고번호', '재입찰번호', '공고명', '수요기관', '개찰일시', '참가수', '낙찰예정자', '투찰금액/투찰금리', '투찰률(%)','진행상황']
 
@@ -81,7 +81,7 @@ class main:
                 self.date = tools.calculate_date(self.date, 1)  # 날짜 빼기 연산
                 res = self.completed_date_check()
                 if self.completed_date_check():  # 1.1. 해당 날짜 크롤링 여부를 확인
-                    print(self.date,t'해당 날짜는 이미 크롤링 되었으므로 다음 날짜로 넘어갑니다')
+                    print(self.date,'해당 날짜는 이미 크롤링 되었으므로 다음 날짜로 넘어갑니다')
                     continue
                 # 1.2 날짜 선택 및 검색
                 self.select_date()

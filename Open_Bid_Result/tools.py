@@ -162,6 +162,33 @@ def insert_value(tb_info, table_name, pri_value=None, save_path='C:\\pycharm\\so
 
     return tb_info
 
+def dataset_insert_value(tb_info, table_name, pri_value=None, save_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\Dataset'):
+    # tb의 요소 중 가장 긴 길이를 추출
+    tb_lenth = 0
+    for key in tb_info.keys():
+        if tb_lenth < len(tb_info[key]):
+            tb_lenth = len(tb_info[key])
+
+    # 결측치를 모두 ''로 채우고 모든 배열들의 길이를 동일하게 맞춤
+    for key in tb_info.keys():
+        while len(tb_info[key]) != tb_lenth:
+            tb_info[key].append('')
+
+    if pri_value != None: # pri_value 값 추가
+        # pri_value가 존재하는 경우
+        if '입찰공고번호' in tb_info.keys():
+            tb_info['입찰공고번호'].clear()
+        else: # 존재하지 않는 경우
+            tb_info['입찰공고번호'] = []
+
+        while len(tb_info['입찰공고번호']) != tb_lenth:
+            tb_info['입찰공고번호'].append(pri_value)
+
+    db = pd.DataFrame(tb_info, columns=tb_info.keys())
+    db.to_csv(os.path.join(save_path, table_name+'.csv'), index=False,header=True, mode='a', encoding='utf-8-sig')
+
+    return tb_info
+
 def move_file(src_file_path, download_path = None, dst_dir_path='C:\\pycharm\\source\\autoNarajangteo\\Open_Bid_Result\\debug'):
     if download_path == None:
         try:
