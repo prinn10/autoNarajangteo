@@ -19,7 +19,6 @@ from selenium.webdriver.common.by import By
 # driver = webdriver.Chrome(ChromeDriverManager().install())
 # C:\Anaconda3\envs\autorecipe 크롬 드라이버 위치 (버전이슈 생길 때 해당 버전에 맞는 chromedirver를 설치해서 저기 경로 안에 있는 chromedriver와 교체해주면 됨)
 
-
 import pywinauto
 from pywinauto import application
 from pywinauto.application import Application
@@ -41,7 +40,7 @@ onecunt = 0
 
 chrome_options = Options()
 chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options) # 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
+driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)# 위 cmd 명령어로 실행된 크롬 제어 권한을 획득
 
 
 driver = tools.driverInit(driver)
@@ -137,6 +136,8 @@ while True:
         tb2info, tb3info, okng, mean, cunt = readPreStandardDetail.readPage(driver) # 페이지 정보 읽기
         onemean += mean
         onecunt += cunt
+
+        print(tb2info)
 
         tools.writeTb2(tb2info)
         tools.writeTb3(tb3info)

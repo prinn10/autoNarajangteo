@@ -42,7 +42,7 @@ def waitFileDownload(download_path):
         file_list = os.listdir(download_path)
         all_check = False
         for file in file_list:
-            if str(file).find('crdownload') != -1:
+            if str(file).find('crdownload') != -1 or str(file).find('.tmp') != -1:
                 sleep(0.3)
                 print('다운로드 대기 중...')
                 all_check = True
